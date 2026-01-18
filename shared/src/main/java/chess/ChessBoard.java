@@ -46,7 +46,39 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        throw new RuntimeException("Not implemented");
+        this.boardArray = new ChessPiece[8][8];
+        for (ChessGame.TeamColor color : ChessGame.TeamColor.values()) {
+            int mainRow, pawnRow;
+            if (color == ChessGame.TeamColor.WHITE) {
+                mainRow = 1;
+                pawnRow = 2;
+            } else {
+                mainRow = 8;
+                pawnRow = 7;
+            }
+
+            //Add pawns to the board
+            for (int i = 1; i <= 8; i++) {
+                var position = new ChessPosition(pawnRow, i);
+                addPiece(position, new ChessPiece(color, ChessPiece.PieceType.PAWN));
+            }
+
+            //Add rooks to the board
+            addPiece(new ChessPosition(mainRow, 1), new ChessPiece(color, ChessPiece.PieceType.ROOK));
+            addPiece(new ChessPosition(mainRow, 8), new ChessPiece(color, ChessPiece.PieceType.ROOK));
+
+            //Add knights to the board
+            addPiece(new ChessPosition(mainRow, 2), new ChessPiece(color, ChessPiece.PieceType.KNIGHT));
+            addPiece(new ChessPosition(mainRow, 7), new ChessPiece(color, ChessPiece.PieceType.KNIGHT));
+
+            //Add bishops to the board
+            addPiece(new ChessPosition(mainRow, 3), new ChessPiece(color, ChessPiece.PieceType.BISHOP));
+            addPiece(new ChessPosition(mainRow, 6), new ChessPiece(color, ChessPiece.PieceType.BISHOP));
+
+            //Add queen and king to the board
+            addPiece(new ChessPosition(mainRow, 4), new ChessPiece(color, ChessPiece.PieceType.QUEEN));
+            addPiece(new ChessPosition(mainRow, 5), new ChessPiece(color, ChessPiece.PieceType.KING));
+        }
     }
 
     @Override
@@ -66,7 +98,7 @@ public class ChessBoard {
     @Override
     public String toString() {
         return "ChessBoard{" +
-                "boardArray=" + Arrays.toString(boardArray) +
+                "boardArray=" + Arrays.deepToString(boardArray) +
                 '}';
     }
 }
