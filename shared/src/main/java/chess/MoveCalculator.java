@@ -22,6 +22,9 @@ public class MoveCalculator {
             case KING:
                 validMoves = (ArrayList<ChessMove>) new KingMoveCalculator(piece, board, piecePosition).calculateMoves();
                 break;
+            case BISHOP:
+                validMoves = (ArrayList<ChessMove>) new BishopMoveCalculator(piece, board, piecePosition).calculateMoves();
+                break;
         }
         return validMoves;
     }
