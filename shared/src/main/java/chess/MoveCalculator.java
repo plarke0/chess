@@ -32,7 +32,7 @@ public class MoveCalculator {
                 validMoves = (ArrayList<ChessMove>) new RookMoveCalculator(piece, board, piecePosition).calculateMoves();
                 break;
             case KNIGHT:
-                //validMoves = (ArrayList<ChessMove>) new KnightMoveCalculator(piece, board, piecePosition).calculateMoves();
+                validMoves = (ArrayList<ChessMove>) new KnightMoveCalculator(piece, board, piecePosition).calculateMoves();
                 break;
             case PAWN:
                 //validMoves = (ArrayList<ChessMove>) new PawnMoveCalculator(piece, board, piecePosition).calculateMoves();
