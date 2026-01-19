@@ -2,12 +2,13 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 
 public class MoveCalculator {
-    private ChessPiece piece;
-    private ChessBoard board;
-    private ChessPosition piecePosition;
+    protected ChessPiece piece;
+    protected ChessBoard board;
+    protected ChessPosition piecePosition;
+    protected int[][] movementOffsets;
+    protected int range;
 
     public MoveCalculator(ChessPiece piece, ChessBoard board, ChessPosition piecePosition) {
         this.piece = piece;
@@ -15,28 +16,41 @@ public class MoveCalculator {
         this.piecePosition = piecePosition;
     }
 
-    public Collection<ChessMove> validMovesAlongSteps(int xStep, int yStep, int range) {
+    public Collection<ChessMove> calculateMoves() {
         var validMoves = new ArrayList<ChessMove>();
-        int newX = piecePosition.getColumn();
-        int newY = piecePosition.getRow();
-
-        while (range != 0) {
-            newX += xStep;
-            newY += yStep;
-            if (newX < 1 || newY < 1 || newX > 8 || newY > 8) {
+        switch (piece.getPieceType()) {
+            case KING:
+                validMoves = (ArrayList<ChessMove>) new KingMoveCalculator(piece, board, piecePosition).calculateMoves();
                 break;
-            }
+        }
+        return validMoves;
+    }
 
-            var newPosition = new ChessPosition(newX, newY);
-            ChessPiece newPositionPiece = board.getPiece(newPosition);
-            if (newPositionPiece != null) {
-                if (newPositionPiece.getTeamColor() != piece.getTeamColor()) {
-                    validMoves.add(new ChessMove(piecePosition, newPosition, null));
+    public Collection<ChessMove> validMovesAlongOffsets() {
+        var validMoves = new ArrayList<ChessMove>();
+
+        for (int[] offset : movementOffsets) {
+            int remainingRange = range;
+            int newRow = piecePosition.getRow();
+            int newCol = piecePosition.getColumn();
+            while (remainingRange != 0) {
+                newCol += offset[0];
+                newRow += offset[1];
+                if (newCol < 1 || newRow < 1 || newCol > 8 || newRow > 8) {
+                    break;
                 }
-                break;
+
+                var newPosition = new ChessPosition(newRow, newCol);
+                ChessPiece newPositionPiece = board.getPiece(newPosition);
+                if (newPositionPiece != null) {
+                    if (newPositionPiece.getTeamColor() != piece.getTeamColor()) {
+                        validMoves.add(new ChessMove(piecePosition, newPosition, null));
+                    }
+                    break;
+                }
+                validMoves.add(new ChessMove(piecePosition, newPosition, null));
+                remainingRange--;
             }
-            validMoves.add(new ChessMove(piecePosition, newPosition, null));
-            range--;
         }
         return validMoves;
     }
