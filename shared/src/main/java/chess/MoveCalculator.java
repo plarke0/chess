@@ -17,31 +17,17 @@ public class MoveCalculator {
     }
 
     public Collection<ChessMove> calculateMoves() {
-        var validMoves = new ArrayList<ChessMove>();
-        switch (piece.getPieceType()) {
-            case KING:
-                validMoves = (ArrayList<ChessMove>) new KingMoveCalculator(piece, board, piecePosition).calculateMoves();
-                break;
-            case QUEEN:
-                validMoves = (ArrayList<ChessMove>) new QueenMoveCalculator(piece, board, piecePosition).calculateMoves();
-                break;
-            case BISHOP:
-                validMoves = (ArrayList<ChessMove>) new BishopMoveCalculator(piece, board, piecePosition).calculateMoves();
-                break;
-            case ROOK:
-                validMoves = (ArrayList<ChessMove>) new RookMoveCalculator(piece, board, piecePosition).calculateMoves();
-                break;
-            case KNIGHT:
-                validMoves = (ArrayList<ChessMove>) new KnightMoveCalculator(piece, board, piecePosition).calculateMoves();
-                break;
-            case PAWN:
-                validMoves = (ArrayList<ChessMove>) new PawnMoveCalculator(piece, board, piecePosition).calculateMoves();
-                break;
-        }
-        return validMoves;
+        return switch (piece.getPieceType()) {
+            case KING -> (ArrayList<ChessMove>) new KingMoveCalculator(piece, board, piecePosition).calculateMoves();
+            case QUEEN -> (ArrayList<ChessMove>) new QueenMoveCalculator(piece, board, piecePosition).calculateMoves();
+            case BISHOP -> (ArrayList<ChessMove>) new BishopMoveCalculator(piece, board, piecePosition).calculateMoves();
+            case ROOK -> (ArrayList<ChessMove>) new RookMoveCalculator(piece, board, piecePosition).calculateMoves();
+            case KNIGHT -> (ArrayList<ChessMove>) new KnightMoveCalculator(piece, board, piecePosition).calculateMoves();
+            case PAWN -> (ArrayList<ChessMove>) new PawnMoveCalculator(piece, board, piecePosition).calculateMoves();
+        };
     }
 
-    private ChessPosition getUpdatedPosition(ChessPosition currentPosition, int[] offset) {
+    protected ChessPosition getUpdatedPosition(ChessPosition currentPosition, int[] offset) {
         int newRow = currentPosition.getRow();
         int newCol = currentPosition.getColumn();
         newRow += offset[1];
@@ -58,7 +44,7 @@ public class MoveCalculator {
         for (int[] offset : movementOffsets) {
             int remainingRange = range;
             ChessPosition newPosition = piecePosition;
-            
+
             while (remainingRange != 0) {
                 newPosition = getUpdatedPosition(newPosition, offset);
                 if (newPosition == null) {
