@@ -35,11 +35,21 @@ public class MoveCalculator {
                 validMoves = (ArrayList<ChessMove>) new KnightMoveCalculator(piece, board, piecePosition).calculateMoves();
                 break;
             case PAWN:
-                //validMoves = (ArrayList<ChessMove>) new PawnMoveCalculator(piece, board, piecePosition).calculateMoves();
+                validMoves = (ArrayList<ChessMove>) new PawnMoveCalculator(piece, board, piecePosition).calculateMoves();
                 break;
-
         }
         return validMoves;
+    }
+
+    private ChessPosition getUpdatedPosition(ChessPosition currentPosition, int[] offset) {
+        int newRow = currentPosition.getRow();
+        int newCol = currentPosition.getColumn();
+        newRow += offset[1];
+        newCol += offset[0];
+        if (newRow < 1 || newCol < 1 || newRow > 8 || newCol > 8) {
+            return null;
+        }
+        return new ChessPosition(newRow, newCol);
     }
 
     public Collection<ChessMove> validMovesAlongOffsets() {
@@ -47,16 +57,14 @@ public class MoveCalculator {
 
         for (int[] offset : movementOffsets) {
             int remainingRange = range;
-            int newRow = piecePosition.getRow();
-            int newCol = piecePosition.getColumn();
+            ChessPosition newPosition = piecePosition;
+            
             while (remainingRange != 0) {
-                newCol += offset[0];
-                newRow += offset[1];
-                if (newCol < 1 || newRow < 1 || newCol > 8 || newRow > 8) {
+                newPosition = getUpdatedPosition(newPosition, offset);
+                if (newPosition == null) {
                     break;
                 }
 
-                var newPosition = new ChessPosition(newRow, newCol);
                 ChessPiece newPositionPiece = board.getPiece(newPosition);
                 if (newPositionPiece != null) {
                     if (newPositionPiece.getTeamColor() != piece.getTeamColor()) {
