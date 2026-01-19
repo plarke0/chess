@@ -22,9 +22,22 @@ public class MoveCalculator {
             case KING:
                 validMoves = (ArrayList<ChessMove>) new KingMoveCalculator(piece, board, piecePosition).calculateMoves();
                 break;
+            case QUEEN:
+                //validMoves = (ArrayList<ChessMove>) new QueenMoveCalculator(piece, board, piecePosition).calculateMoves();
+                break;
             case BISHOP:
                 validMoves = (ArrayList<ChessMove>) new BishopMoveCalculator(piece, board, piecePosition).calculateMoves();
                 break;
+            case ROOK:
+                validMoves = (ArrayList<ChessMove>) new RookMoveCalculator(piece, board, piecePosition).calculateMoves();
+                break;
+            case KNIGHT:
+                //validMoves = (ArrayList<ChessMove>) new KnightMoveCalculator(piece, board, piecePosition).calculateMoves();
+                break;
+            case PAWN:
+                //validMoves = (ArrayList<ChessMove>) new PawnMoveCalculator(piece, board, piecePosition).calculateMoves();
+                break;
+
         }
         return validMoves;
     }
