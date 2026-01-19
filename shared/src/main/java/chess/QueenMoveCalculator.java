@@ -6,7 +6,7 @@ public class QueenMoveCalculator extends MoveCalculator{
     public QueenMoveCalculator(ChessPiece piece, ChessBoard board, ChessPosition piecePosition) {
         super(piece, board, piecePosition);
         this.movementOffsets = new int[][] {{-1,-1}, {0,-1}, {1,-1}, {-1,0},
-                                            {1,0}, {-1,1}, {0,1}, {1, 1}};
+                                            {1,0}, {-1,1}, {0,1}, {1,1}};
         this.range = -1;
     }
 
