@@ -8,7 +8,7 @@ to guess in advance.
 Also went over Phase 0 and getting started.
 
 ## 1/15/26
-For phase0, don't worry about check/checkmate. You also don't need to worry about enpasant or castling.
+For phase0, don't worry about check/checkmate. You also don't need to worry about en passant or castling.
 
 Put all the common logic in the parent move calculator class.
 
@@ -128,3 +128,71 @@ public class Example {
 }
 ```
 
+## 1/20/26
+Alma 34:24-25: Cry unto the Lord always, he will help your with whatever your flocks and your fields may be.
+
+### Arrays
+In Java, multidimensional arrays are arrays of arrays. The main difference is that multidimensional arrays in Java can be ragged. This means that inner arrays can be different sizes.
+
+### Packages
+- Way to organize classes into logical groups
+- Packages can have sub-packages
+- Specify the package for a class with a 'package' statement at the top of the .java file
+- Files must be in a directory structure that matches the package path
+- The convention is to store your packages in a path that is the reverse of a domain you own
+- Many default Java packages do not follow this convention, and are instead stored in a java directory
+
+### Import
+- Provide a shorthand for the full package name (e.g. `import edu.byu.cs.Student`)
+- You do not need to import for the following:
+  - You for some reason want to use the full package name
+  - The class you are using is java.lang (imported by default, has Object class etc.)
+  - The class you would import is in the same package as the class that needs to use it
+
+### CLASSPATH
+- Environment variable that contains a list of directories that contain .class files
+- Current directory is implicitly on the CLASSPATH
+- Can use -classpath command line parameter
+
+### Classes and Objects
+- Classes are templates and objects are the things we interact with
+- References act like pointers, and they are addresses to objects. But just because we have a reference, doesn't mean we have an object.
+```java
+import java.utils.Date;
+
+public class ExampleClass {
+    public void exampleMethod() {
+        //Create reference
+        Date dt;
+        //Assign an object to the reference
+        dt = new Date();
+    }
+}
+```
+- Reference equality is different that object equality
+  - Reference equality just looks at where the reference points
+  - Object equality, by default, does the same thing as reference equality, but you can override the method so you can define what equality means
+
+### Instance vs Static Variables
+- Instance Variable
+  - Each object receives its own copy of instance variables
+  - Most variables should be instance variables
+- Static Variables
+  - Really should be called class variables. Only one per class
+  - Use in special cases where you won't create a new instance, or if there is only one value
+
+### Instance vs Static Methods
+- Instance Methods
+  - Methods are associated with a specific instance
+  - Invoked from a reference to an instance
+  - When invoked by an instance, it acts on that instance's variables
+  - Can also access that class's static variables and methods
+- Static Methods
+  - Methods are associated with a class
+  - Invoked by using the class name
+  - Can be invoked from a reference, but the method is still not associated with an instance 
+  - Cannot access instance variables or methods
+
+### Getters and Setters
+- Used to control how users interact with you instance/static variables
+- Can use Intellij to generate getters and setters. This is actually better practice.
