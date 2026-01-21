@@ -1,4 +1,4 @@
-package chess.MoveCalculator;
+package chess.movement;
 
 import chess.*;
 
@@ -6,10 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PawnMoveCalculator extends MoveCalculator{
-    private final int END_ROW;
-    private final int[][] POSSIBLE_FORWARD_OFFSETS;
-    private final int FORWARD_RANGE;
-    private final int[][] POSSIBLE_CAPTURE_OFFSETS;
+    private final int endRow;
+    private final int[][] possibleForwardOffsets;
+    private final int forwardRange;
+    private final int[][] possibleCaptureOffsets;
     private static final int CAPTURE_RANGE = 1;
 
     public PawnMoveCalculator(ChessPiece piece, ChessBoard board, ChessPosition piecePosition) {
@@ -18,23 +18,23 @@ public class PawnMoveCalculator extends MoveCalculator{
         if (this.piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
             direction = 1;
             startRow = 2;
-            this.END_ROW = 8;
+            this.endRow = 8;
         } else {
             direction = -1;
             startRow = 7;
-            this.END_ROW = 1;
+            this.endRow = 1;
         }
         if (this.piecePosition.getRow() == startRow) {
-            this.FORWARD_RANGE = 2;
+            this.forwardRange = 2;
         } else {
-            this.FORWARD_RANGE = 1;
+            this.forwardRange = 1;
         }
-        POSSIBLE_FORWARD_OFFSETS = new int[][] {{direction, 0}};
-        POSSIBLE_CAPTURE_OFFSETS = new int[][] {{direction, 1}, {direction, -1}};
+        possibleForwardOffsets = new int[][] {{direction, 0}};
+        possibleCaptureOffsets = new int[][] {{direction, 1}, {direction, -1}};
     }
 
     private ArrayList<ChessMove> createPawnMove(ChessPosition endPosition) {
-        if (endPosition.getRow() == this.END_ROW) {
+        if (endPosition.getRow() == this.endRow) {
             return new ArrayList<>(List.of(new ChessMove(piecePosition, endPosition, ChessPiece.PieceType.KNIGHT),
                     new ChessMove(piecePosition, endPosition, ChessPiece.PieceType.BISHOP),
                     new ChessMove(piecePosition, endPosition, ChessPiece.PieceType.ROOK),
@@ -60,9 +60,9 @@ public class PawnMoveCalculator extends MoveCalculator{
 
     public ArrayList<ChessMove> calculateMoves() {
         var validForwardMoves = validMovesAlongAllOffsets(
-                this.POSSIBLE_FORWARD_OFFSETS, FORWARD_RANGE, CaptureRestriction.NoCapture);
+                this.possibleForwardOffsets, forwardRange, CaptureRestriction.NoCapture);
         var validCaptureMoves = validMovesAlongAllOffsets(
-                this.POSSIBLE_CAPTURE_OFFSETS, CAPTURE_RANGE, CaptureRestriction.NeedsCapture);
+                this.possibleCaptureOffsets, CAPTURE_RANGE, CaptureRestriction.NeedsCapture);
         return mergePawnMoves(validForwardMoves, validCaptureMoves);
     }
 }

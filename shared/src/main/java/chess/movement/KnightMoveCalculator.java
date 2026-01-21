@@ -1,4 +1,4 @@
-package chess.MoveCalculator;
+package chess.movement;
 
 import chess.ChessBoard;
 import chess.ChessMove;
@@ -7,12 +7,12 @@ import chess.ChessPosition;
 
 import java.util.ArrayList;
 
-public class KingMoveCalculator extends MoveCalculator{
-    private static final int[][] MOVEMENT_OFFSETS = {{0,1}, {1,1}, {1,0}, {1,-1},
-                                                    {0,-1}, {-1,-1}, {-1,0}, {-1,1}};
+public class KnightMoveCalculator extends MoveCalculator{
+    private static final int[][] MOVEMENT_OFFSETS = {{1,2}, {2,1}, {2,-1}, {1,-2},
+                                                    {-1,-2}, {-2,-1}, {-2,1}, {-1,2}};
     private static final int RANGE = 1;
 
-    public KingMoveCalculator(ChessPiece piece, ChessBoard board, ChessPosition piecePosition) {
+    public KnightMoveCalculator(ChessPiece piece, ChessBoard board, ChessPosition piecePosition) {
         super(piece, board, piecePosition);
     }
 
