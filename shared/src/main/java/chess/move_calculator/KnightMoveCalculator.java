@@ -5,17 +5,18 @@ import chess.ChessMove;
 import chess.ChessPiece;
 import chess.ChessPosition;
 
-import java.util.Collection;
+import java.util.ArrayList;
 
 public class KnightMoveCalculator extends MoveCalculator{
+    private static final int[][] movementOffsets = {{1,2}, {2,1}, {2,-1}, {1,-2},
+                                                    {-1,-2}, {-2,-1}, {-2,1}, {-1,2}};
+    private static final int range = 1;
+
     public KnightMoveCalculator(ChessPiece piece, ChessBoard board, ChessPosition piecePosition) {
         super(piece, board, piecePosition);
-        this.movementOffsets = new int[][] {{2,1}, {1,2}, {-1,2}, {-2,1},
-                                            {-2,-1}, {-1,-2}, {1,-2}, {2,-1}};
-        this.range = 1;
     }
 
-    public Collection<ChessMove> calculateMoves() {
-        return validMovesAlongOffsets();
+    public ArrayList<ChessMove> calculateMoves() {
+        return validMovesAlongAllOffsets(movementOffsets, range, CaptureRestriction.CanCapture);
     }
 }

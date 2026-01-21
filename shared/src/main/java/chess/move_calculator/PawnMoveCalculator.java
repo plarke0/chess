@@ -3,74 +3,66 @@ package chess.move_calculator;
 import chess.*;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class PawnMoveCalculator extends MoveCalculator{
+    private final int endRow;
+    private final int[][] possibleForwardOffsets;
+    private final int forwardRange;
+    private final int[][] possibleCaptureOffsets;
+    private static final int captureRange = 1;
+
     public PawnMoveCalculator(ChessPiece piece, ChessBoard board, ChessPosition piecePosition) {
         super(piece, board, piecePosition);
-    }
-
-    private ArrayList<ChessMove> createPawnMoves(ChessPosition newPosition, int endRow) {
-        if (newPosition.getRow() == endRow) {
-            return new ArrayList<>(List.of(new ChessMove(piecePosition, newPosition, ChessPiece.PieceType.KNIGHT),
-                    new ChessMove(piecePosition, newPosition, ChessPiece.PieceType.BISHOP),
-                    new ChessMove(piecePosition, newPosition, ChessPiece.PieceType.ROOK),
-                    new ChessMove(piecePosition, newPosition, ChessPiece.PieceType.QUEEN)));
-        } else {
-            return new ArrayList<>(List.of(new ChessMove(piecePosition, newPosition, null)));
-        }
-    }
-
-    public Collection<ChessMove> calculateMoves() {
-        var validMoves = new ArrayList<ChessMove>();
-        int[][] possibleMoveOffsets;
-        int[][] possibleCaptureOffsets;
-        int direction;
-        int startRow, endRow;
-        if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
+        int direction, startRow;
+        if (this.piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
             direction = 1;
             startRow = 2;
-            endRow = 8;
+            this.endRow = 8;
         } else {
             direction = -1;
             startRow = 7;
-            endRow = 1;
+            this.endRow = 1;
         }
-        int row = piecePosition.getRow();
-        boolean inStartRow = row == startRow;
-        if (inStartRow) {
-            possibleMoveOffsets = new int[][] {{0, direction}, {0, 2*direction}};
+        if (this.piecePosition.getRow() == startRow) {
+            this.forwardRange = 2;
         } else {
-            possibleMoveOffsets = new int[][] {{0, direction}};
+            this.forwardRange = 1;
         }
-        possibleCaptureOffsets = new int[][] {{-1, direction}, {1, direction}};
+        possibleForwardOffsets = new int[][] {{direction, 0}};
+        possibleCaptureOffsets = new int[][] {{direction, 1}, {direction, -1}};
+    }
 
-        for (int[] moveOffset : possibleMoveOffsets) {
-            ChessPosition newPosition = getUpdatedPosition(piecePosition, moveOffset);
-            if (newPosition == null) {
-                continue;
-            }
-
-            ChessPiece newPositionPiece = board.getPiece(newPosition);
-            if (newPositionPiece != null) {
-                break;
-            }
-            validMoves.addAll(createPawnMoves(newPosition, endRow));
+    private ArrayList<ChessMove> createPawnMove(ChessPosition endPosition) {
+        if (endPosition.getRow() == this.endRow) {
+            return new ArrayList<>(List.of(new ChessMove(piecePosition, endPosition, ChessPiece.PieceType.KNIGHT),
+                    new ChessMove(piecePosition, endPosition, ChessPiece.PieceType.BISHOP),
+                    new ChessMove(piecePosition, endPosition, ChessPiece.PieceType.ROOK),
+                    new ChessMove(piecePosition, endPosition, ChessPiece.PieceType.QUEEN)));
+        } else {
+            return new ArrayList<>(List.of(new ChessMove(piecePosition, endPosition, null)));
         }
+    }
 
-        for (int[] captureOffset : possibleCaptureOffsets) {
-            ChessPosition newPosition = getUpdatedPosition(piecePosition, captureOffset);
-            if (newPosition == null) {
-                continue;
-            }
-
-            ChessPiece newPositionPiece = board.getPiece(newPosition);
-            if (newPositionPiece != null && newPositionPiece.getTeamColor() != piece.getTeamColor()) {
-                validMoves.addAll(createPawnMoves(newPosition, endRow));
-            }
+    private ArrayList<ChessMove> mergePawnMoves(ArrayList<ChessMove> forwardMoves,
+                                                ArrayList<ChessMove> captureMoves) {
+        var mergedMoves = new ArrayList<ChessMove>();
+        for (ChessMove move : forwardMoves) {
+            ChessPosition endPosition = move.getEndPosition();
+            mergedMoves.addAll(createPawnMove(endPosition));
         }
+        for (ChessMove move : captureMoves) {
+            ChessPosition endPosition = move.getEndPosition();
+            mergedMoves.addAll(createPawnMove(endPosition));
+        }
+        return mergedMoves;
+    }
 
-        return validMoves;
+    public ArrayList<ChessMove> calculateMoves() {
+        var validForwardMoves = validMovesAlongAllOffsets(
+                this.possibleForwardOffsets, forwardRange, CaptureRestriction.NoCapture);
+        var validCaptureMoves = validMovesAlongAllOffsets(
+                this.possibleCaptureOffsets, captureRange, CaptureRestriction.NeedsCapture);
+        return mergePawnMoves(validForwardMoves, validCaptureMoves);
     }
 }
