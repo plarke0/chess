@@ -1,6 +1,6 @@
 package chess;
 
-import chess.move_calculator.MoveCalculator;
+import chess.MoveCalculator.MoveCalculator;
 
 import java.util.Collection;
 import java.util.Objects;

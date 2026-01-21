@@ -1,4 +1,4 @@
-package chess.move_calculator;
+package chess.MoveCalculator;
 
 import chess.ChessBoard;
 import chess.ChessMove;
@@ -48,44 +48,63 @@ public class MoveCalculator {
         var validMoves = new ArrayList<ChessMove>();
         ChessPosition newPosition = this.piecePosition;
 
-        loop:
         while (range != 0) {
             newPosition = getUpdatedPosition(newPosition, offset);
-            if (newPosition == null) break;
-
-            ChessPiece newPositionPiece = this.board.getPiece(newPosition);
-            ChessMove newMove = new ChessMove(this.piecePosition, newPosition, null);
-            switch (captureRestriction) {
-                case CaptureRestriction.NoCapture -> {
-                    if (newPositionPiece != null) break loop;
-                }
-                case CaptureRestriction.CanCapture -> {
-                    if (newPositionPiece != null) {
-                        if (newPositionPiece.getTeamColor() != this.piece.getTeamColor()) {
-                            validMoves.add(newMove);
-                        }
-                        break loop;
-                    }
-                }
-                case CaptureRestriction.NeedsCapture -> {
-                    if (newPositionPiece != null && newPositionPiece.getTeamColor() != this.piece.getTeamColor()){
-                        validMoves.add(newMove);
-                    }
-                    break loop;
-                }
+            if (newPosition == null) {
+                break;
             }
-            validMoves.add(newMove);
+
+            ChessMove validMove = getValidMove(newPosition, captureRestriction);
+            if (validMove != null) {
+                validMoves.add(validMove);
+            }
+            if (this.board.getPiece(newPosition) != null) {
+                break;
+            }
             range--;
         }
         return validMoves;
     }
 
-    protected ChessPosition getUpdatedPosition(ChessPosition currentPosition, int[] offset) {
+    private ChessPosition getUpdatedPosition(ChessPosition currentPosition, int[] offset) {
         int newRow = currentPosition.getRow() + offset[0];
         int newCol = currentPosition.getColumn() + offset[1];
         if (newRow < 1 || newCol < 1 || newRow > 8 || newCol > 8) {
             return null;
         }
         return new ChessPosition(newRow, newCol);
+    }
+
+    private ChessMove getValidMove(ChessPosition newPosition, CaptureRestriction captureRestriction) {
+        ChessPiece newPositionPiece = this.board.getPiece(newPosition);
+        ChessMove potentialMove = new ChessMove(this.piecePosition, newPosition, null);
+
+        switch (captureRestriction) {
+            case CaptureRestriction.NoCapture -> {
+                if (newPositionPiece != null) {
+                    return null;
+                } else {
+                    return potentialMove;
+                }
+            }
+            case CaptureRestriction.CanCapture -> {
+                if (newPositionPiece != null) {
+                    if (newPositionPiece.getTeamColor() != this.piece.getTeamColor()) {
+                        return potentialMove;
+                    }
+                    return null;
+                } else {
+                    return potentialMove;
+                }
+            }
+            case CaptureRestriction.NeedsCapture -> {
+                if (newPositionPiece != null && newPositionPiece.getTeamColor() != this.piece.getTeamColor()){
+                    return potentialMove;
+                } else {
+                    return null;
+                }
+            }
+        }
+        return null;
     }
 }
