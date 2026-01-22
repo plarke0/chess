@@ -196,3 +196,89 @@ public class ExampleClass {
 ### Getters and Setters
 - Used to control how users interact with you instance/static variables
 - Can use Intellij to generate getters and setters. This is actually better practice.
+
+## 1/22/26
+Was 24 minutes late, missed instructions for the Programming Exam.
+
+### Records
+- A simplified type of class
+- Automatically generates constructor, hash, toString, and getters
+  - Getters are the variable names with no 'get' in front
+- E.g.
+- Can't directly modify the values stored in records, but can return a new record with a changed name
+```java
+public record Pet(int id, String name, String owner) {
+    Pet rename(String newName) {
+        return new Pet(id, newName, owner);
+    }
+}
+```
+
+### Exceptions and Exception Handling
+- Exceptions and Errors are subclasses of Throwable
+- Errors are things that you can't do anything about when they happen
+  - OutOfMemory, NoClassDefFound, etc.
+- Exceptions you can do stuff about
+  - Bugs will throw exceptions, so the thing you can do is fix your code
+    - NullPointerException, SegFault, etc.
+  - Other exceptions can be handled in code, as they are the result of something unexpected, but shouldn't crash the program
+
+#### Try/Catch Blocks
+- Same idea as try/except in Python
+```
+// Without Multi-Catch
+try {
+  // Code that may throw an exception
+} catch(SomeExceptionType ex) {
+  // Code to handle the excption
+} catch(OtherExceptionType) {
+  // Code to handle the exception
+}
+
+// With Multi-Catch
+try {
+  // Code that may throw an exception
+} catch(SomeExceptionType | OtherExceptionType ex) {
+  // Code to handle the excption
+}
+```
+- Catching, but not handling the exception is called "swallowing" the exception. This is not good
+  - "It's the same as repentance, fix it, don't hide it" - Dr. Wilkerson
+
+#### The Handle or Declare Rule
+- Handle
+```
+try {
+  ...
+} catch {
+  ...
+}
+```
+- Declare
+```
+pubic void method() throws Exception {
+  ...
+}
+```
+- Only applies to checked exceptions. Errors and runtime exceptions (i.e. NullPointerException, etc.) cannot be declared and should not be handled
+- Declaring that your method can throw a certain error means that you don't have to handle that exception
+  - This means that everyone has to follow the handle or declare rule. If you don't handle the exception, you have to declare it
+  - If you don't, the compiler with get angry at you
+  - This allows more general classes to put off specific handling, and pass it on to whatever called it
+- When you don't handle exceptions, your method gets popped off the stack
+
+#### Finally
+- The finally block comes after all of your catch blocks and is run after both try and catch blocks
+- Used to clean things up, even if an exception is thrown
+
+#### Try with Resources
+- Makes it so you don't need a finally block most of the time
+- Also makes it so you can easily throw the first exception that you got, rather than the most recent
+  - e.g. Opening a corrupted file, then trying to close it in cleanup
+  - Would throw an exception about closing the corrupted file
+- Only works with some specific things that were made for try with resources
+
+### Throwing Exceptions
+- Don't make your exception early, as that will report the wrong line number
+- You can make your own exceptions by extending the Exception class for checked exceptions, RuntimeException, or Error
+
