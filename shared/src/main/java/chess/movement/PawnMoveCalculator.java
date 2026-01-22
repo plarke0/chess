@@ -58,6 +58,7 @@ public class PawnMoveCalculator extends MoveCalculator{
         return mergedMoves;
     }
 
+    @Override
     public ArrayList<ChessMove> calculateMoves() {
         var validForwardMoves = validMovesAlongAllOffsets(
                 this.possibleForwardOffsets, forwardRange, CaptureRestriction.NoCapture);

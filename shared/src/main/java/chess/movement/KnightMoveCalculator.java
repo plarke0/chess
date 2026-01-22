@@ -16,6 +16,7 @@ public class KnightMoveCalculator extends MoveCalculator{
         super(piece, board, piecePosition);
     }
 
+    @Override
     public ArrayList<ChessMove> calculateMoves() {
         return validMovesAlongAllOffsets(MOVEMENT_OFFSETS, RANGE, CaptureRestriction.CanCapture);
     }
