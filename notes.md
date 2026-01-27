@@ -272,7 +272,7 @@ pubic void method() throws Exception {
 - Used to clean things up, even if an exception is thrown
 
 #### Try with Resources
-- Makes it so you don't need a finally block most of the time
+- Makes it so you don't need a `finally` block most of the time
 - Also makes it so you can easily throw the first exception that you got, rather than the most recent
   - e.g. Opening a corrupted file, then trying to close it in cleanup
   - Would throw an exception about closing the corrupted file
@@ -281,4 +281,96 @@ pubic void method() throws Exception {
 ### Throwing Exceptions
 - Don't make your exception early, as that will report the wrong line number
 - You can make your own exceptions by extending the Exception class for checked exceptions, RuntimeException, or Error
+
+## 1/27/26
+### Interfaces
+- Creates method declarations, but leaves it to subclasses to implement the functionality of each
+- When setting pointer types, use the most general that you can. What you hide from the end user, you can change
+
+### Collections
+- Used when regular arrays don't quite do it
+- All Collections, Maps, and Iterators are in java.utils
+
+### List
+- A sequence of elements accessed by index with `get(index)` and `set(index, value)`
+- Two main types
+  - ArrayList (resizable array implementation)
+  - LinkedList (doubly-linked list implementation)
+- Lists support a more powerful iterator call `ListIterator`
+
+### Set
+- A collection that contains no duplicates
+  - Uses `add(value)`, `contains(value)`, `remove(value)`
+- Three main types
+  - **HashSet** (hash table implementation)
+  - TreeSet (bst implementation)
+  - LinkedHashSet (hash table + linked list implementation)
+
+### Queue
+- A collection designed for holding elements prior to processing
+  - Uses `add()`, `peek()`, `remove()`
+- Three main types
+  - **ArrayDeque** (FIFO, resizable array implementation)
+  - LinkedList (FIFO, linked list implementation)
+  - PriorityQueue (priority queue, binary heap implementation)
+
+### Deque
+- A queue that supports efficient insertion and removal at both ends
+- Uses:
+  - `addFirst(value)` and `addLast(value)`
+  - `peekFirst()` and `peekLast()`
+  - `removeFirst()` and `removeLast()`
+- Two main types
+  - ArrayDeque (resizable array implementation)
+  - LinkedList (linked list implementation)
+
+### Stack
+- Java's `Stack` class is deprecated
+- If you need a stack, use a Deque with:
+  - `push()` => `Deque.addFirst()`
+  - `pop()` => `Deque.popFirst()`
+  - `peek()` => `Deque.peekFirst()`
+
+### Map
+- A collection that maps keys to values
+- A set of (key, value) pairs where keys are unique
+- Uses:
+  - `put(key,value)`, `get(key)`, `contains(key)`, `remove(key)`
+  - `keySet()`, `values()`, `entrySet()`
+- **HashMap** (hash table implementation)
+- TreeMap (bst implementation)
+- LinkedHashMap (hash table + linked list impl)
+
+### Iterable Interface
+- All collections (not maps) implement the iterable interface
+- This allows collections to work in Java's `for each` loop
+```
+Set<String> words;
+for (String word : words) {
+  ...
+}
+```
+
+### Equality Checking
+- When collections are searching for a particular object, they use the `Object.equals()` function
+- You have to ba careful when modifying objects that you put into Collections
+- This is especially important when dealing with hash codes
+  - **RULE**: If equals is based on identity, so should hashCode. If equals is based on value, so should hashCode. Equals and hashCode should use the same fields in their equality and hashCode calculations.
+- You should never change information in objects that are used as keys in data structures (i.e., you must remove and re-insert)
+
+### Sorted Collections
+- TreeSet (BST), TreeMap (BST), and PriorityQueue (binary heap)
+- The elements of a sorted collection must be sortable. This means that we must be able to compare any two objects and determine their relationship: a < b, a > b, or a == b.
+- Comparable and Comparator for tree-based collections
+
+### Copying Objects
+- There are two ways to make copies
+  - Shallow
+    - Copies only the Object and sets its values to be the same as the original
+    - Usually not what you want
+    - Fine if your object is immutable, since modifying the copy can't modify the original
+  - Deep
+    - Recursively copies the Object and all of its values
+    - Guarantees two separate objects
+    - Use for mutable objects
 
