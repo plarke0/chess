@@ -374,3 +374,49 @@ for (String word : words) {
     - Guarantees two separate objects
     - Use for mutable objects
 
+## 1/29/26
+
+Missed lecture on Inner Classes
+
+### Phase 1
+Use this order:
+1. isInCheck
+2. validMoves
+3. isInCheckmate
+4. isInStalemate
+5. Castling
+6. En Passant
+- validMoves
+  - Returns the set of all moves that are valid in an actual game
+  - Takes into account whose turn it is, check, and moving into check
+  - Starts with all possible moves, then throws away invalid moves
+    - Can find valid moves when in check by simulating every move and checking if you are still in check
+    - Use a clone of the board for every move, so then you don't have to worry about resetting moves
+- isInCheck
+  - Finds all valid moves of the other team and see's if the king's position is in that list
+  - Can also ray cast out of the king and see if the enemies it hits can capture it
+- isInCheckmate
+  - Returns true if you are in check and you have no valid moves
+- isInStalemate
+  - Returns true if you are not in check, but you have no valid moves
+
+### Software Design Principles
+- Create systems that:
+  - Work and satisfy customer requirements
+  - Easy to understand, debug, and maintain
+  - Hold up well under changes
+- Design is inherently iterative
+  - Design, implement, test, design, implement, test...
+  - This feedback loop provides valuable knowledge
+  - Can't design everything before implementation because customers will always want changes
+  - Beginning implementation without any design doesn't work either
+  - The best results come from a good balance of design and implementation in each loop
+- Abstraction
+  - The primary tool for coping with complexity
+  - In OOP, abstractions are represented by classes
+  - Programming languages provide classes that model low-level concepts such as Strings and I/O
+  - We create high level concepts to implement low-level concepts
+  - Carefully choose what methods are public facing
+    - Keeps it so that the user can make use of you code without worrying about the implementation
+    - Lets us make use of complex programs without being burdened by complexity
+  - We can't capture all of the complexity in our abstractions, so we carefully choose what we need to include for the specific use case
