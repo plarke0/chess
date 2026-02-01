@@ -1,7 +1,10 @@
 package chess;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.Objects;
+import java.util.Spliterator;
+import java.util.function.Consumer;
 
 /**
  * A chessboard that can hold and rearrange chess pieces.
@@ -9,7 +12,7 @@ import java.util.Objects;
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
-public class ChessBoard {
+public class ChessBoard implements Iterable<ChessPiece>{
     private ChessPiece[][] boardArray;
 
     public ChessBoard() {
@@ -112,5 +115,43 @@ public class ChessBoard {
             string += rowString;
         }
         return string;
+    }
+
+    public class BoardIterator implements Iterator<ChessPiece> {
+        int row = 0;
+        int col = 0;
+        int boardHeight = boardArray.length;
+        int boardWidth = boardArray[0].length;
+
+        @Override
+        public boolean hasNext() {
+            return row < boardHeight && col < boardWidth;
+        }
+
+        @Override
+        public ChessPiece next() {
+            ChessPiece currentPiece = boardArray[row][col];
+            col++;
+            if (col >= boardWidth) {
+                col = 0;
+                row ++;
+            }
+            return currentPiece;
+        }
+    }
+
+    @Override
+    public Iterator<ChessPiece> iterator() {
+        return new BoardIterator();
+    }
+
+    @Override
+    public void forEach(Consumer action) {
+        Iterable.super.forEach(action);
+    }
+
+    @Override
+    public Spliterator<ChessPiece> spliterator() {
+        return Iterable.super.spliterator();
     }
 }
