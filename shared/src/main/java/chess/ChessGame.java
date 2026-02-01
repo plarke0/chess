@@ -1,5 +1,6 @@
 package chess;
 
+import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -130,7 +131,7 @@ public class ChessGame {
         } else {
             enemyColor = TeamColor.WHITE;
         }
-        Collection<ChessMove> validEnemyMoves = allPossibleMoves(enemyColor, board);
+        Collection<ChessMove> validEnemyMoves = allPossibleAttacks(enemyColor, board);
         ChessPosition kingPosition = getKingPosition(teamColor, board);
         if (kingPosition == null) {
             return false;
@@ -144,7 +145,7 @@ public class ChessGame {
         return false;
     }
 
-    private Collection<ChessMove> allPossibleMoves(TeamColor teamColor, ChessBoard board) {
+    private Collection<ChessMove> allPossibleAttacks(TeamColor teamColor, ChessBoard board) {
         Collection<ChessMove> possibleMoves = new ArrayList<>();
         for (ChessPosition position : board) {
             ChessPiece piece = board.getPiece(position);
@@ -180,7 +181,11 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        if (isInCheck(teamColor)) {
+            Collection<ChessMove> validMoves = allValidMoves(teamColor);
+            return validMoves.isEmpty();
+        }
+        return false;
     }
 
     /**
@@ -192,6 +197,18 @@ public class ChessGame {
      */
     public boolean isInStalemate(TeamColor teamColor) {
         throw new RuntimeException("Not implemented");
+    }
+
+    private Collection<ChessMove> allValidMoves(TeamColor teamColor) {
+        ArrayList<ChessMove> validMoves = new ArrayList<>();
+        for (ChessPosition position : board) {
+            ChessPiece selectedPiece = board.getPiece(position);
+            if (selectedPiece == null || selectedPiece.getTeamColor() != teamColor) {
+                continue;
+            }
+            validMoves.addAll(validMoves(position));
+        }
+        return validMoves;
     }
 
     /**
