@@ -49,7 +49,12 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+        ChessPiece movingPiece = this.board.getPiece(startPosition);
+        if (movingPiece != null) {
+            return movingPiece.pieceMoves(this.board, startPosition);
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -64,18 +69,27 @@ public class ChessGame {
         ChessPiece.PieceType promotionPiece = move.getPromotionPiece();
 
         Collection<ChessMove> validMoves = validMoves(startPosition);
-        if (!validMoves.contains(move)) {
+        if (validMoves == null || !validMoves.contains(move)) {
             throw new InvalidMoveException();
         }
 
         ChessPiece movingPiece = this.board.getPiece(startPosition);
         TeamColor movingColor = movingPiece.getTeamColor();
+        if (movingColor != this.currentTeamColor) {
+            throw new InvalidMoveException();
+        }
         if (promotionPiece != null) {
             movingPiece = new ChessPiece(movingColor, promotionPiece);
         }
 
         this.board.addPiece(startPosition, null);
         this.board.addPiece(endPosition, movingPiece);
+
+        if (this.currentTeamColor == TeamColor.WHITE) {
+            setTeamTurn(TeamColor.BLACK);
+        } else {
+            setTeamTurn(TeamColor.WHITE);
+        }
     }
 
     /**
