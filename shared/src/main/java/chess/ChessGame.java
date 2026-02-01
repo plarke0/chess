@@ -63,20 +63,19 @@ public class ChessGame {
         ChessPosition endPosition = move.getEndPosition();
         ChessPiece.PieceType promotionPiece = move.getPromotionPiece();
 
-        try {
-            ChessPiece movingPiece = this.board.getPiece(startPosition);
-            TeamColor movingColor = movingPiece.getTeamColor();
-            if (promotionPiece != null) {
-                movingPiece = new ChessPiece(movingColor, promotionPiece);
-            }
-
-            this.board.addPiece(startPosition, null);
-            this.board.addPiece(endPosition, movingPiece);
-        } catch (RuntimeException exception) {
-            throw exception;
-        } catch (Exception _) {
+        Collection<ChessMove> validMoves = validMoves(startPosition);
+        if (!validMoves.contains(move)) {
             throw new InvalidMoveException();
         }
+
+        ChessPiece movingPiece = this.board.getPiece(startPosition);
+        TeamColor movingColor = movingPiece.getTeamColor();
+        if (promotionPiece != null) {
+            movingPiece = new ChessPiece(movingColor, promotionPiece);
+        }
+
+        this.board.addPiece(startPosition, null);
+        this.board.addPiece(endPosition, movingPiece);
     }
 
     /**
