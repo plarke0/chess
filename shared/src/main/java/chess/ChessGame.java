@@ -10,6 +10,9 @@ import java.util.Collection;
  */
 public class ChessGame {
 
+    TeamColor currentTeam = TeamColor.WHITE;
+    ChessBoard board = new ChessBoard();
+
     public ChessGame() {
 
     }
