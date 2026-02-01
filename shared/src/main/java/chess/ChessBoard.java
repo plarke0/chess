@@ -12,7 +12,7 @@ import java.util.function.Consumer;
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
-public class ChessBoard implements Iterable<ChessPosition>{
+public class ChessBoard implements Iterable<ChessPosition>, Cloneable{
     private ChessPiece[][] boardArray;
 
     public ChessBoard() {
@@ -112,7 +112,7 @@ public class ChessBoard implements Iterable<ChessPosition>{
                 rowString += "|";
             }
             rowString += "\n";
-            string += rowString;
+            string = rowString + string;
         }
         return string;
     }
@@ -153,5 +153,19 @@ public class ChessBoard implements Iterable<ChessPosition>{
     @Override
     public Spliterator<ChessPosition> spliterator() {
         return Iterable.super.spliterator();
+    }
+
+    @Override
+    protected ChessBoard clone() {
+        try {
+            ChessBoard clone = (ChessBoard) super.clone();
+            clone.boardArray = new ChessPiece[8][8];
+            for (int i = 0; i < 8; i++) {
+                clone.boardArray[i] = Arrays.copyOf(boardArray[i], 8);
+            }
+            return clone;
+        } catch (CloneNotSupportedException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 }
