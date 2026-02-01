@@ -12,7 +12,7 @@ import java.util.function.Consumer;
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
-public class ChessBoard implements Iterable<ChessPiece>{
+public class ChessBoard implements Iterable<ChessPosition>{
     private ChessPiece[][] boardArray;
 
     public ChessBoard() {
@@ -117,7 +117,7 @@ public class ChessBoard implements Iterable<ChessPiece>{
         return string;
     }
 
-    public class BoardIterator implements Iterator<ChessPiece> {
+    public class BoardIterator implements Iterator<ChessPosition> {
         int row = 0;
         int col = 0;
         int boardHeight = boardArray.length;
@@ -129,19 +129,19 @@ public class ChessBoard implements Iterable<ChessPiece>{
         }
 
         @Override
-        public ChessPiece next() {
-            ChessPiece currentPiece = boardArray[row][col];
+        public ChessPosition next() {
+            ChessPosition currentPosition = new ChessPosition(row, col);
             col++;
             if (col >= boardWidth) {
                 col = 0;
                 row ++;
             }
-            return currentPiece;
+            return currentPosition;
         }
     }
 
     @Override
-    public Iterator<ChessPiece> iterator() {
+    public Iterator<ChessPosition> iterator() {
         return new BoardIterator();
     }
 
@@ -151,7 +151,7 @@ public class ChessBoard implements Iterable<ChessPiece>{
     }
 
     @Override
-    public Spliterator<ChessPiece> spliterator() {
+    public Spliterator<ChessPosition> spliterator() {
         return Iterable.super.spliterator();
     }
 }
