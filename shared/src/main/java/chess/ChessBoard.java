@@ -97,8 +97,20 @@ public class ChessBoard {
 
     @Override
     public String toString() {
-        return "ChessBoard{" +
-                "boardArray=" + Arrays.deepToString(boardArray) +
-                '}';
+        String string = "";
+        for (ChessPiece[] row : this.boardArray) {
+            String rowString = "|";
+            for (ChessPiece piece : row) {
+                if (piece != null) {
+                    rowString += piece.toString();
+                } else {
+                    rowString += " ";
+                }
+                rowString += "|";
+            }
+            rowString += "\n";
+            string += rowString;
+        }
+        return string;
     }
 }
