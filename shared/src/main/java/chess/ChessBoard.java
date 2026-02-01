@@ -130,7 +130,7 @@ public class ChessBoard implements Iterable<ChessPosition>, Cloneable{
 
         @Override
         public ChessPosition next() {
-            ChessPosition currentPosition = new ChessPosition(row, col);
+            ChessPosition currentPosition = new ChessPosition(row+1, col+1);
             col++;
             if (col >= boardWidth) {
                 col = 0;
