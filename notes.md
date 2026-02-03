@@ -405,13 +405,13 @@ Use this order:
   - Work and satisfy customer requirements
   - Easy to understand, debug, and maintain
   - Hold up well under changes
-- Design is inherently iterative
+- Design is inherently iterative (Principle #1)
   - Design, implement, test, design, implement, test...
   - This feedback loop provides valuable knowledge
   - Can't design everything before implementation because customers will always want changes
   - Beginning implementation without any design doesn't work either
   - The best results come from a good balance of design and implementation in each loop
-- Abstraction
+- Abstraction (Principle #2)
   - The primary tool for coping with complexity
   - In OOP, abstractions are represented by classes
   - Programming languages provide classes that model low-level concepts such as Strings and I/O
@@ -420,3 +420,67 @@ Use this order:
     - Keeps it so that the user can make use of you code without worrying about the implementation
     - Lets us make use of complex programs without being burdened by complexity
   - We can't capture all of the complexity in our abstractions, so we carefully choose what we need to include for the specific use case
+
+## 2/3/26
+### Ways to Read/Write Classes
+- Streams: Read or write a file (or other source/destination of bytes) sequentially
+- Scanner Class: Tokenize an input stream
+- Files Class: Read, copy, etc. whole files
+- RandomAccessFile Class: Use a file pointer to read/write at any point in a file 
+### File Class:
+- Used to represent, create, or delete a file, but not to read one
+- Check file existence:
+```
+File file = new File("/user/MyFile.txt");
+if(file.exists()) {
+```
+
+- Create a file:
+```
+File file = new File("/user/MyFile.txt");
+file.createNewFile();
+```
+- Delete a file:
+```
+File file = new File("/user/MyFile.txt");
+file.delete();
+```
+
+### Reading/Writing Bytes
+The `InputStream` interface is used to read bytes sequentially from a data source
+- Filter Input Streams:
+  - Can decompress the bytes coming through the stream
+  - Can decrypt the bytes coming through the stream
+  - etc.
+- These filter streams can be chained together between opening the data source and the destination
+- Filter Output Streams
+  - Can compress the bytes as they go into the stream
+  - Can encrypt the bytes as they go into the stream
+  - etc.
+- These can also be chained together
+
+### Readers and Writers
+Basically the same as streams, but used solely for and optimized for text. There are some slight differences
+- `PrintWriter` is great for outputting text
+  - Uses `.println()` etc.
+- Can convert from streams to readers/writers
+  - InputStreamReader
+  - OutputStreamReader
+
+### Scanner
+- Reads input one token at a time
+- Read from File, InputStream, or Reader
+- Can specify the delimiter(s) with RegEx
+  - Defaults to whitespace
+
+### Good Naming (Principle #3)
+- A central part of abstraction is giving things names (or identifiers)
+- Selecting good names for things is critical
+- Class, method, and variable names should all fully describe their purposes
+
+### Single Responsibility (Principle #4)
+- Each class and method should have a single responsibility
+  - Classes should represent one well-defined concept. All variables and methods in a class should be highly related to the class' single concept
+  - Methods should represent one well-defined task. Any unrelated or loosely related subtasks should be delegated to separate methods
+    - If a method needs to preform multiple tasks, it should call other methods to handle the each task
+  - Cohesive classes/methods that follow these principles will be easy to name
