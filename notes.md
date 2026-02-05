@@ -484,3 +484,15 @@ Basically the same as streams, but used solely for and optimized for text. There
   - Methods should represent one well-defined task. Any unrelated or loosely related subtasks should be delegated to separate methods
     - If a method needs to preform multiple tasks, it should call other methods to handle the each task
   - Cohesive classes/methods that follow these principles will be easy to name
+
+## 2/5/26
+Missed lecture time on GSON and deserialization
+
+### Phase 2
+- Create a set of diagrams demonstrating your understanding of Phase 3
+- Start by reading the Phase 2 specs
+- Will create 6 diagrams
+  - Technically 7, but one is provided as an example
+- Need to read the Phase 3 spec as well
+- Can either have 7 different Service Classes, or group them by concept in ~3 different classes
+- GSON will ignore null values when creating JSON strings
