@@ -496,3 +496,11 @@ Missed lecture time on GSON and deserialization
 - Need to read the Phase 3 spec as well
 - Can either have 7 different Service Classes, or group them by concept in ~3 different classes
 - GSON will ignore null values when creating JSON strings
+
+## 2/10/26
+### HTTP
+- Clients establish network connections to a server, allowing them to send bytes to each other through streams
+- IP addresses define a specific machine, and ports define specific programs in a machine
+- URL
+  - {Protocol}://{Domain Name}:{Port Number}/{Path}
+- 
