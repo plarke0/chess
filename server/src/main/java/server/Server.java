@@ -32,6 +32,8 @@ public class Server {
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
         javalin.post("/user", this::registerUser);
 
+        javalin.exception(ResponseException.class, this::responseExceptionHandler);
+        javalin.exception(DataAccessException.class, this::dataAccessExceptionHandler);
     }
 
     public int run(int desiredPort) {
@@ -43,17 +45,19 @@ public class Server {
         javalin.stop();
     }
 
-    private void registerUser(Context context) {
+    private void registerUser(Context context) throws ResponseException, DataAccessException {
         RegisterRequest registerRequest = new Gson().fromJson(context.body(), RegisterRequest.class);
-        try {
-            RegisterResponse registerResponse = userService.register(registerRequest);
-            context.result(new Gson().toJson(registerResponse));
-        } catch (ResponseException e) {
-            context.status(e.httpCode);
-            context.result("{ \"message\": \"Error: " + e.getMessage() + "\" }");
-        } catch (DataAccessException e) {
-            context.status(500);
-            context.result("{ \"message\": \"Error: " + e.getMessage() + "\" }");
-        }
+        RegisterResponse registerResponse = userService.register(registerRequest);
+        context.result(new Gson().toJson(registerResponse));
+    }
+
+    private void responseExceptionHandler(ResponseException e, Context context) {
+        context.status(e.httpCode);
+        context.result("{ \"message\": \"Error: " + e.getMessage() + "\" }");
+    }
+
+    private void dataAccessExceptionHandler(DataAccessException e, Context context) {
+        context.status(500);
+        context.result("{ \"message\": \"Error: " + e.getMessage() + "\" }");
     }
 }
