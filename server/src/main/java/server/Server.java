@@ -1,6 +1,7 @@
 package server;
 
 import com.google.gson.Gson;
+import dataaccess.DataAccessException;
 import dataaccess.memory.database.AuthDB;
 import dataaccess.memory.database.GameDB;
 import dataaccess.memory.database.UserDB;
@@ -11,6 +12,7 @@ import service.GameService;
 import service.UserService;
 import service.requests.RegisterRequest;
 import service.responses.RegisterResponse;
+import service.responses.ResponseException;
 
 public class Server {
 
@@ -41,9 +43,17 @@ public class Server {
         javalin.stop();
     }
 
-    private void registerUser(Context context) throws Exception {
+    private void registerUser(Context context) {
         RegisterRequest registerRequest = new Gson().fromJson(context.body(), RegisterRequest.class);
-        RegisterResponse registerResponse = userService.register(registerRequest);
-        context.result(new Gson().toJson(registerResponse));
+        try {
+            RegisterResponse registerResponse = userService.register(registerRequest);
+            context.result(new Gson().toJson(registerResponse));
+        } catch (ResponseException e) {
+            context.status(e.httpCode);
+            context.result("{ \"message\": \"Error: " + e.getMessage() + "\" }");
+        } catch (DataAccessException e) {
+            context.status(500);
+            context.result("{ \"message\": \"Error: " + e.getMessage() + "\" }");
+        }
     }
 }

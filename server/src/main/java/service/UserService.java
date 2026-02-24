@@ -26,34 +26,23 @@ public class UserService {
         this.authDAO = new MemoryAuthDAO(authDB);
     }
 
-    public RegisterResponse register(RegisterRequest registerRequest) throws ResponseException {
+    public RegisterResponse register(RegisterRequest registerRequest) throws ResponseException, DataAccessException {
         UserData userData = new UserData(
                 registerRequest.username(),
                 registerRequest.password(),
                 registerRequest.email()
         );
-        try {
-            UserData existingUser = userDAO.getUser(userData.username());
-            if (existingUser != null) {
-                throw new ResponseException("User already exists");
-            }
-        } catch (DataAccessException e) {
-            throw new ResponseException(e.getMessage());
+
+        UserData existingUser = userDAO.getUser(userData.username());
+        if (existingUser != null) {
+            throw new ResponseException(403, "already taken");
         }
 
-        try {
-            userDAO.insertUser(userData);
-        } catch (DataAccessException e) {
-            throw new ResponseException(e.getMessage());
-        }
+        userDAO.insertUser(userData);
 
         String authToken = UUID.randomUUID().toString();
         AuthData authData = new AuthData(authToken, userData.username());
-        try {
-            authDAO.insertAuth(authData);
-        } catch (DataAccessException e) {
-            throw new ResponseException(e.getMessage());
-        }
+        authDAO.insertAuth(authData);
 
         return new RegisterResponse(userData.username(), authToken);
     }
