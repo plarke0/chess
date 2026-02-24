@@ -18,19 +18,19 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     public void insertGame(GameData gameData) throws DataAccessException {
-
+        throw new UnsupportedOperationException("Feature not implemented.");
     }
 
     public GameData getGame(String gameID) throws DataAccessException {
-        return null;
+        throw new UnsupportedOperationException("Feature not implemented.");
     }
 
     public Collection<GameData> listGames() throws DataAccessException {
-        return List.of();
+        throw new UnsupportedOperationException("Feature not implemented.");
     }
 
     public void updateGame(GameData gameData) throws DataAccessException {
-
+        throw new UnsupportedOperationException("Feature not implemented.");
     }
 
     public void clear() throws DataAccessException {

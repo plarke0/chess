@@ -16,15 +16,15 @@ public class MemoryAuthDAO implements AuthDAO {
     }
 
     public void insertAuth(AuthData authData) throws DataAccessException {
-
+        throw new UnsupportedOperationException("Feature not implemented.");
     }
 
     public AuthData getAuth(String authToken) throws DataAccessException {
-        return null;
+        throw new UnsupportedOperationException("Feature not implemented.");
     }
 
     public void deleteAuth(AuthData authData) throws DataAccessException {
-
+        throw new UnsupportedOperationException("Feature not implemented.");
     }
 
     public void clear() throws DataAccessException {
