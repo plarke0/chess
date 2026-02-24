@@ -27,14 +27,14 @@ public class UserService {
     }
 
     public RegisterResponse register(RegisterRequest registerRequest) throws ResponseException {
-        UserData registerUserData = new UserData(
+        UserData userData = new UserData(
                 registerRequest.username(),
                 registerRequest.password(),
                 registerRequest.email()
         );
         try {
-            UserData userData = userDAO.getUser(registerUserData.username());
-            if (userData != null) {
+            UserData existingUser = userDAO.getUser(userData.username());
+            if (existingUser != null) {
                 throw new ResponseException("User already exists");
             }
         } catch (DataAccessException e) {
@@ -42,20 +42,20 @@ public class UserService {
         }
 
         try {
-            userDAO.insertUser(registerUserData);
+            userDAO.insertUser(userData);
         } catch (DataAccessException e) {
             throw new ResponseException(e.getMessage());
         }
 
         String authToken = UUID.randomUUID().toString();
-        AuthData authData = new AuthData(authToken, registerUserData.username());
+        AuthData authData = new AuthData(authToken, userData.username());
         try {
             authDAO.insertAuth(authData);
         } catch (DataAccessException e) {
             throw new ResponseException(e.getMessage());
         }
 
-        return new RegisterResponse(registerUserData.username(), authToken);
+        return new RegisterResponse(userData.username(), authToken);
     }
 
     public LoginResponse login(LoginRequest loginRequest) {
