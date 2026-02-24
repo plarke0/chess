@@ -16,7 +16,7 @@ public class ClearService {
         this.gameDB = gameDB;
     }
 
-    void clear() {
+    public void clear() {
         throw new UnsupportedOperationException("Feature not implemented.");
     }
 }
