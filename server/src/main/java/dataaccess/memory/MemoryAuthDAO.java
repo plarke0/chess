@@ -5,6 +5,8 @@ import dataaccess.DataAccessException;
 import dataaccess.memory.database.AuthDB;
 import model.AuthData;
 
+import java.util.ArrayList;
+
 public class MemoryAuthDAO implements AuthDAO {
 
     private final AuthDB authDB;
@@ -26,6 +28,6 @@ public class MemoryAuthDAO implements AuthDAO {
     }
 
     public void clear() throws DataAccessException {
-
+        this.authDB.authDBArray = new ArrayList<>();
     }
 }

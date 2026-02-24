@@ -5,6 +5,7 @@ import dataaccess.GameDAO;
 import dataaccess.memory.database.GameDB;
 import model.GameData;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -33,6 +34,6 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     public void clear() throws DataAccessException {
-
+        this.gameDB.gameDBArray = new ArrayList<>();
     }
 }
