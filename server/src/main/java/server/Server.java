@@ -1,6 +1,9 @@
 package server;
 
 import com.google.gson.Gson;
+import dataaccess.memory.database.AuthDB;
+import dataaccess.memory.database.GameDB;
+import dataaccess.memory.database.UserDB;
 import io.javalin.*;
 import io.javalin.http.Context;
 import service.ClearService;
@@ -11,15 +14,19 @@ import service.responses.RegisterResponse;
 
 public class Server {
 
+    private final AuthDB authDB = new AuthDB();
+    private final UserDB userDB = new UserDB();
+    private final GameDB gameDB = new GameDB();
+
     private final UserService userService;
     private final GameService gameService;
     private final ClearService clearService;
     private final Javalin javalin;
 
     public Server() {
-        this.userService = new UserService();
-        this.gameService = new GameService();
-        this.clearService = new ClearService();
+        this.userService = new UserService(userDB, authDB);
+        this.gameService = new GameService(gameDB, authDB);
+        this.clearService = new ClearService(authDB, userDB, gameDB);
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
         javalin.post("/user", this::registerUser);
 
