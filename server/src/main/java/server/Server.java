@@ -30,6 +30,7 @@ public class Server {
         this.gameService = new GameService(gameDB, authDB);
         this.clearService = new ClearService(authDB, userDB, gameDB);
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
+        javalin.delete("/db", this::clear);
         javalin.post("/user", this::registerUser);
 
         javalin.exception(ResponseException.class, this::responseExceptionHandler);
@@ -43,6 +44,10 @@ public class Server {
 
     public void stop() {
         javalin.stop();
+    }
+
+    private void clear(Context context) throws DataAccessException {
+        clearService.clear();
     }
 
     private void registerUser(Context context) throws ResponseException, DataAccessException {
