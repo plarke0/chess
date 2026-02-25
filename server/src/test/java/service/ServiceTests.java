@@ -5,6 +5,7 @@ import dataaccess.memory.database.AuthDB;
 import dataaccess.memory.database.GameDB;
 import dataaccess.memory.database.UserDB;
 import model.AuthData;
+import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -14,6 +15,7 @@ import service.requests.RegisterRequest;
 import service.responses.RegisterResponse;
 import service.responses.ResponseException;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class ServiceTests {
@@ -50,6 +52,14 @@ public class ServiceTests {
         String authToken = UUID.randomUUID().toString();
         existingAuth = new AuthData(authToken, existingUser.username());
         authDB.authDBArray.add(existingAuth);
+    }
+
+    @Test
+    public void clear() throws DataAccessException {
+        clearService.clear();
+        Assertions.assertEquals(new ArrayList<AuthData>(), authDB.authDBArray);
+        Assertions.assertEquals(new ArrayList<UserData>(), userDB.userDBArray);
+        Assertions.assertEquals(new ArrayList<GameData>(), gameDB.gameDBArray);
     }
 
     @Test
