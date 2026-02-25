@@ -16,7 +16,7 @@ public class MemoryAuthDAO implements AuthDAO {
     }
 
     public void insertAuth(AuthData authData) throws DataAccessException {
-        throw new UnsupportedOperationException("Feature not implemented.");
+        authDB.authDBArray.add(authData);
     }
 
     public AuthData getAuth(String authToken) throws DataAccessException {
