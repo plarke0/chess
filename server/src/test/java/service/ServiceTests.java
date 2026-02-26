@@ -30,6 +30,7 @@ public class ServiceTests {
     private static UserData existingUser;
     private static UserData newUser;
     private AuthData existingAuth;
+    private GameData existingGameData;
 
     @BeforeAll
     public static void init() {
@@ -52,6 +53,15 @@ public class ServiceTests {
         String authToken = UUID.randomUUID().toString();
         existingAuth = new AuthData(authToken, existingUser.username());
         authDB.authDBArray.add(existingAuth);
+
+        existingGameData = new GameData(
+                99999,
+                null,
+                null,
+                "Test Game",
+                new ChessGame()
+        );
+        gameDB.gameDBArray.add(existingGameData);
     }
 
     @Test
@@ -155,24 +165,15 @@ public class ServiceTests {
 
     @Test
     public void listGamesEmpty() throws ResponseException, DataAccessException {
+        gameDB.gameDBArray = new ArrayList<>();
         ListGamesResponse listGamesResponse = gameService.listGames(existingAuth.authToken());
         Assertions.assertEquals(listGamesResponse.games(), gameDB.gameDBArray);
     }
 
     @Test
     public void listGamesWithGames() throws ResponseException, DataAccessException {
-        GameData gameData = new GameData(
-                12345,
-                "White",
-                "Black",
-                "Test Game",
-                new ChessGame()
-        );
-        gameDB.gameDBArray.add(gameData);
-
         ListGamesResponse listGamesResponse = gameService.listGames(existingAuth.authToken());
         Assertions.assertEquals(listGamesResponse.games(), gameDB.gameDBArray);
-        Assertions.assertTrue(listGamesResponse.games().contains(gameData));
     }
 
     @Test
@@ -215,6 +216,76 @@ public class ServiceTests {
         Assertions.assertThrows(
                 ResponseException.class,
                 () -> gameService.createGame(existingAuth.authToken(), createGameRequest)
+        );
+    }
+
+    @Test
+    public void joinGameWhiteExistingUser() throws ResponseException, DataAccessException {
+        JoinGameRequest joinGameRequest = new JoinGameRequest(existingGameData.gameID(), "WHITE");
+        gameService.joinGame(existingAuth.authToken(), joinGameRequest);
+        Assertions.assertEquals(existingAuth.username(), existingGameData.whiteUsername());
+    }
+
+    @Test
+    public void joinGameBlackExistingUser() throws ResponseException, DataAccessException {
+        JoinGameRequest joinGameRequest = new JoinGameRequest(existingGameData.gameID(), "BLACK");
+        gameService.joinGame(existingAuth.authToken(), joinGameRequest);
+        Assertions.assertEquals(existingAuth.username(), existingGameData.blackUsername());
+    }
+
+    @Test
+    public void joinGameWhiteInvalidAuth() {
+        JoinGameRequest joinGameRequest = new JoinGameRequest(existingGameData.gameID(), "WHITE");
+        Assertions.assertThrows(
+                ResponseException.class,
+                () -> gameService.joinGame("NOTANAUTHTOKEN", joinGameRequest)
+        );
+    }
+
+    @Test
+    public void joinGameWhiteAlreadyFilled() {
+        int filledGameID = 12345;
+        GameData filledGameData = new GameData(
+                filledGameID,
+                "Taken",
+                null,
+                "Filled Test Game",
+                new ChessGame()
+        );
+        gameDB.gameDBArray.add(filledGameData);
+
+        JoinGameRequest joinGameRequest = new JoinGameRequest(filledGameID, "WHITE");
+        Assertions.assertThrows(
+                ResponseException.class,
+                () -> gameService.joinGame(existingAuth.authToken(), joinGameRequest)
+        );
+    }
+
+    @Test
+    public void joinGameWhiteInvalidGameID() {
+        int invalidGameID = 54321;
+        JoinGameRequest joinGameRequest = new JoinGameRequest(invalidGameID, "WHITE");
+        Assertions.assertThrows(
+                ResponseException.class,
+                () -> gameService.joinGame(existingAuth.authToken(), joinGameRequest)
+        );
+    }
+
+    @Test
+    public void joinGameBadRequestGameID() {
+        JoinGameRequest joinGameRequest = new JoinGameRequest(0, "WHITE");
+        Assertions.assertThrows(
+                ResponseException.class,
+                () -> gameService.joinGame(existingAuth.authToken(), joinGameRequest)
+        );
+    }
+
+    @Test
+    public void joinGameBadRequestPlayerColor() {
+        JoinGameRequest joinGameRequest = new JoinGameRequest(existingGameData.gameID(), null);
+        Assertions.assertThrows(
+                ResponseException.class,
+                () -> gameService.joinGame(existingAuth.authToken(), joinGameRequest)
         );
     }
 }
