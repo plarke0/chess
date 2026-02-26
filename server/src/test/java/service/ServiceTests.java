@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import service.requests.LoginRequest;
+import service.requests.LogoutRequest;
 import service.requests.RegisterRequest;
 import service.responses.LoginResponse;
 import service.responses.RegisterResponse;
@@ -140,5 +141,34 @@ public class ServiceTests {
         );
 
         Assertions.assertThrows(ResponseException.class, () -> userService.login(loginRequest));
+    }
+
+    @Test
+    public void logoutSignedInUser() throws ResponseException, DataAccessException {
+        LogoutRequest logoutRequest = new LogoutRequest(
+                existingAuth.authToken()
+        );
+
+        userService.logout(logoutRequest);
+        AuthData existingAuthData = new AuthData(existingAuth.authToken(), existingAuth.username());
+        Assertions.assertFalse(authDB.authDBArray.contains(existingAuthData));
+    }
+
+    @Test
+    public void logoutInvalidAuth() {
+        LogoutRequest logoutRequest = new LogoutRequest(
+            "NOTANAUTHTOKEN"
+        );
+
+        Assertions.assertThrows(ResponseException.class, () -> userService.logout(logoutRequest));
+    }
+
+    @Test
+    public void logoutBadRequest() {
+        LogoutRequest logoutRequest = new LogoutRequest(
+                null
+        );
+
+        Assertions.assertThrows(ResponseException.class, () -> userService.logout(logoutRequest));
     }
 }
