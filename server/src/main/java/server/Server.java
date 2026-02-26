@@ -10,7 +10,9 @@ import io.javalin.http.Context;
 import service.ClearService;
 import service.GameService;
 import service.UserService;
+import service.requests.LoginRequest;
 import service.requests.RegisterRequest;
+import service.responses.LoginResponse;
 import service.responses.RegisterResponse;
 import service.responses.ResponseException;
 
@@ -32,6 +34,7 @@ public class Server {
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
         javalin.delete("/db", this::clear);
         javalin.post("/user", this::registerUser);
+        javalin.post("/session", this::loginUser);
 
         javalin.exception(ResponseException.class, this::responseExceptionHandler);
         javalin.exception(DataAccessException.class, this::dataAccessExceptionHandler);
@@ -54,6 +57,12 @@ public class Server {
         RegisterRequest registerRequest = new Gson().fromJson(context.body(), RegisterRequest.class);
         RegisterResponse registerResponse = userService.register(registerRequest);
         context.result(new Gson().toJson(registerResponse));
+    }
+
+    private void loginUser(Context context) throws ResponseException, DataAccessException {
+        LoginRequest loginRequest = new Gson().fromJson(context.body(), LoginRequest.class);
+        LoginResponse loginResponse = userService.login(loginRequest);
+        context.result(new Gson().toJson(loginResponse));
     }
 
     private void responseExceptionHandler(ResponseException e, Context context) {

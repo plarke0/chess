@@ -53,11 +53,30 @@ public class UserService {
         return new RegisterResponse(userData.username(), authToken);
     }
 
-    public LoginResponse login(LoginRequest loginRequest) {
-        throw new UnsupportedOperationException("Feature not implemented.");
+    public LoginResponse login(LoginRequest loginRequest) throws ResponseException, DataAccessException {
+        if (loginRequest.username() == null ||
+                loginRequest.password() == null
+        ) {
+            throw new ResponseException(400, "bad request");
+        }
+
+        UserData userData = userDAO.getUser(loginRequest.username());
+        if (userData == null) {
+            throw new ResponseException(400, "bad request");
+        }
+
+        if (!loginRequest.password().equals(userData.password())) {
+            throw new ResponseException(401, "unauthorized");
+        }
+
+        String authToken = UUID.randomUUID().toString();
+        AuthData authData = new AuthData(authToken, userData.username());
+        authDAO.insertAuth(authData);
+
+        return new LoginResponse(userData.username(), authToken);
     }
 
-    public void logout(LogoutRequest logoutRequest) {
+    public void logout(LogoutRequest logoutRequest) throws ResponseException, DataAccessException {
         throw new UnsupportedOperationException("Feature not implemented.");
     }
 }
