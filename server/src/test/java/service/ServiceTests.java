@@ -11,7 +11,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import service.requests.LoginRequest;
 import service.requests.RegisterRequest;
+import service.responses.LoginResponse;
 import service.responses.RegisterResponse;
 import service.responses.ResponseException;
 
@@ -85,5 +87,58 @@ public class ServiceTests {
         );
 
         Assertions.assertThrows(ResponseException.class, () -> userService.register(registerRequest));
+    }
+
+    @Test
+    public void registerBadRequest() {
+        RegisterRequest registerRequest = new RegisterRequest(
+                existingUser.username(),
+                existingUser.password(),
+                null
+        );
+
+        Assertions.assertThrows(ResponseException.class, () -> userService.register(registerRequest));
+    }
+
+    @Test
+    public void loginExistingUser() throws DataAccessException, ResponseException {
+        LoginRequest loginRequest = new LoginRequest(
+                existingUser.username(),
+                existingUser.password()
+        );
+
+        LoginResponse loginResponse = userService.login(loginRequest);
+        AuthData authData = new AuthData(loginResponse.authToken(), loginResponse.username());
+        Assertions.assertTrue(authDB.authDBArray.contains(authData));
+    }
+
+    @Test
+    public void loginUserDoesNotExist() {
+        LoginRequest loginRequest = new LoginRequest(
+                newUser.username(),
+                newUser.password()
+        );
+
+        Assertions.assertThrows(ResponseException.class, () -> userService.login(loginRequest));
+    }
+
+    @Test
+    public void loginIncorrectPassword() {
+        LoginRequest loginRequest = new LoginRequest(
+                existingUser.username(),
+                "NOTTHEPASSWORD"
+        );
+
+        Assertions.assertThrows(ResponseException.class, () -> userService.login(loginRequest));
+    }
+
+    @Test
+    public void loginBadRequest() {
+        LoginRequest loginRequest = new LoginRequest(
+                newUser.username(),
+                null
+        );
+
+        Assertions.assertThrows(ResponseException.class, () -> userService.login(loginRequest));
     }
 }
