@@ -27,17 +27,17 @@ public class UserService {
     }
 
     public RegisterResponse register(RegisterRequest registerRequest) throws ResponseException, DataAccessException {
+        if (registerRequest.username() == null ||
+            registerRequest.password() == null ||
+            registerRequest.email() == null
+        ) {
+            throw new ResponseException(400, "bad request");
+        }
         UserData userData = new UserData(
                 registerRequest.username(),
                 registerRequest.password(),
                 registerRequest.email()
         );
-        if (userData.username() == null ||
-            userData.password() == null ||
-            userData.email() == null
-        ) {
-            throw new ResponseException(400, "bad request");
-        }
 
         UserData existingUser = userDAO.getUser(userData.username());
         if (existingUser != null) {
