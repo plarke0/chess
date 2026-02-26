@@ -21,7 +21,7 @@ public class MemoryGameDAO implements GameDAO {
         this.gameDB.gameDBArray.add(gameData);
     }
 
-    public GameData getGame(String gameID) throws DataAccessException {
+    public GameData getGame(int gameID) throws DataAccessException {
         throw new UnsupportedOperationException("Feature not implemented.");
     }
 
