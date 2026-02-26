@@ -231,7 +231,7 @@ public class ServiceTests {
     }
 
     @Test
-    public void creatGameBadRequest() {
+    public void createGameBadRequest() {
         CreateGameRequest createGameRequest = new CreateGameRequest(
                 null,
                 existingAuth.authToken()
