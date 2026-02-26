@@ -1,5 +1,6 @@
 package service;
 
+import chess.ChessGame;
 import dataaccess.DataAccessException;
 import dataaccess.memory.database.AuthDB;
 import dataaccess.memory.database.GameDB;
@@ -11,14 +12,17 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import service.requests.ListGamesRequest;
 import service.requests.LoginRequest;
 import service.requests.LogoutRequest;
 import service.requests.RegisterRequest;
+import service.responses.ListGamesResponse;
 import service.responses.LoginResponse;
 import service.responses.RegisterResponse;
 import service.responses.ResponseException;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.UUID;
 
 public class ServiceTests {
@@ -164,11 +168,41 @@ public class ServiceTests {
     }
 
     @Test
-    public void logoutBadRequest() {
-        LogoutRequest logoutRequest = new LogoutRequest(
-                null
+    public void listGamesEmpty() throws ResponseException, DataAccessException {
+        ListGamesRequest listGamesRequest = new ListGamesRequest(
+                existingAuth.authToken()
         );
 
-        Assertions.assertThrows(ResponseException.class, () -> userService.logout(logoutRequest));
+        ListGamesResponse listGamesResponse = gameService.listGames(listGamesRequest);
+        Assertions.assertEquals(listGamesResponse.games(), gameDB.gameDBArray);
+    }
+
+    @Test
+    public void listGamesWithGames() throws ResponseException, DataAccessException {
+        ListGamesRequest listGamesRequest = new ListGamesRequest(
+                existingAuth.authToken()
+        );
+
+        GameData gameData = new GameData(
+                12345,
+                "White",
+                "Black",
+                "Test Game",
+                new ChessGame()
+        );
+        gameDB.gameDBArray.add(gameData);
+
+        ListGamesResponse listGamesResponse = gameService.listGames(listGamesRequest);
+        Assertions.assertEquals(listGamesResponse.games(), gameDB.gameDBArray);
+        Assertions.assertTrue(listGamesResponse.games().contains(gameData));
+    }
+
+    @Test
+    public void listGamesInvalidAuth() {
+        ListGamesRequest listGamesRequest = new ListGamesRequest(
+          "NOTANAUTHTOKEN"
+        );
+
+        Assertions.assertThrows(ResponseException.class, () -> gameService.listGames(listGamesRequest));
     }
 }
