@@ -8,7 +8,6 @@ import dataaccess.memory.database.UserDB;
 import model.AuthData;
 import model.UserData;
 import service.requests.LoginRequest;
-import service.requests.LogoutRequest;
 import service.requests.RegisterRequest;
 import service.responses.LoginResponse;
 import service.responses.RegisterResponse;
@@ -76,8 +75,8 @@ public class UserService {
         return new LoginResponse(userData.username(), authToken);
     }
 
-    public void logout(LogoutRequest logoutRequest) throws ResponseException, DataAccessException {
-        AuthData authData = authDAO.getAuth(logoutRequest.authToken());
+    public void logout(String authToken) throws ResponseException, DataAccessException {
+        AuthData authData = authDAO.getAuth(authToken);
         if (authData == null) {
             throw new ResponseException(401, "unauthorized");
         }

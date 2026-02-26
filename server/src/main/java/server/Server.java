@@ -10,10 +10,7 @@ import io.javalin.http.Context;
 import service.ClearService;
 import service.GameService;
 import service.UserService;
-import service.requests.ListGamesRequest;
-import service.requests.LoginRequest;
-import service.requests.LogoutRequest;
-import service.requests.RegisterRequest;
+import service.requests.*;
 import service.responses.ListGamesResponse;
 import service.responses.LoginResponse;
 import service.responses.RegisterResponse;
@@ -73,13 +70,13 @@ public class Server {
     }
 
     private void logoutUser(Context context) throws ResponseException, DataAccessException {
-        LogoutRequest logoutRequest = new LogoutRequest(context.header("authorization"));
-        userService.logout(logoutRequest);
+        String authToken = context.header("authorization");
+        userService.logout(authToken);
     }
 
     private void listGames(Context context) throws ResponseException, DataAccessException {
-        ListGamesRequest listGamesRequest  = new ListGamesRequest(context.header("authorization"));
-        ListGamesResponse listGamesResponse = gameService.listGames(listGamesRequest);
+        String authToken = context.header("authorization");
+        ListGamesResponse listGamesResponse = gameService.listGames(authToken);
         context.result(new Gson().toJson(listGamesResponse));
     }
 

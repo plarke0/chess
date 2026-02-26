@@ -9,7 +9,6 @@ import model.AuthData;
 import model.GameData;
 import service.requests.CreateGameRequest;
 import service.requests.JoinGameRequest;
-import service.requests.ListGamesRequest;
 import service.responses.CreateGameResponse;
 import service.responses.ListGamesResponse;
 import service.responses.ResponseException;
@@ -26,16 +25,16 @@ public class GameService {
         this.authDAO = new MemoryAuthDAO(authDB);
     }
 
-    public CreateGameResponse createGame(CreateGameRequest createGameRequest) throws ResponseException, DataAccessException {
+    public CreateGameResponse createGame(String authToken, CreateGameRequest createGameRequest) throws ResponseException, DataAccessException {
         throw new UnsupportedOperationException("Feature not implemented.");
     }
 
-    public void joinGame(JoinGameRequest joinGameRequest) throws ResponseException, DataAccessException {
+    public void joinGame(String authToken, JoinGameRequest joinGameRequest) throws ResponseException, DataAccessException {
         throw new UnsupportedOperationException("Feature not implemented.");
     }
 
-    public ListGamesResponse listGames(ListGamesRequest listGamesRequest) throws ResponseException, DataAccessException {
-        AuthData authData = authDAO.getAuth(listGamesRequest.authToken());
+    public ListGamesResponse listGames(String authToken) throws ResponseException, DataAccessException {
+        AuthData authData = authDAO.getAuth(authToken);
         if (authData == null) {
             throw new ResponseException(401, "unauthorized");
         }

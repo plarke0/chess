@@ -142,40 +142,25 @@ public class ServiceTests {
 
     @Test
     public void logoutSignedInUser() throws ResponseException, DataAccessException {
-        LogoutRequest logoutRequest = new LogoutRequest(
-                existingAuth.authToken()
-        );
+        userService.logout(existingAuth.authToken());
 
-        userService.logout(logoutRequest);
         AuthData existingAuthData = new AuthData(existingAuth.authToken(), existingAuth.username());
         Assertions.assertFalse(authDB.authDBArray.contains(existingAuthData));
     }
 
     @Test
     public void logoutInvalidAuth() {
-        LogoutRequest logoutRequest = new LogoutRequest(
-            "NOTANAUTHTOKEN"
-        );
-
-        Assertions.assertThrows(ResponseException.class, () -> userService.logout(logoutRequest));
+        Assertions.assertThrows(ResponseException.class, () -> userService.logout("NOTANAUTHTOKEN"));
     }
 
     @Test
     public void listGamesEmpty() throws ResponseException, DataAccessException {
-        ListGamesRequest listGamesRequest = new ListGamesRequest(
-                existingAuth.authToken()
-        );
-
-        ListGamesResponse listGamesResponse = gameService.listGames(listGamesRequest);
+        ListGamesResponse listGamesResponse = gameService.listGames(existingAuth.authToken());
         Assertions.assertEquals(listGamesResponse.games(), gameDB.gameDBArray);
     }
 
     @Test
     public void listGamesWithGames() throws ResponseException, DataAccessException {
-        ListGamesRequest listGamesRequest = new ListGamesRequest(
-                existingAuth.authToken()
-        );
-
         GameData gameData = new GameData(
                 12345,
                 "White",
@@ -185,29 +170,22 @@ public class ServiceTests {
         );
         gameDB.gameDBArray.add(gameData);
 
-        ListGamesResponse listGamesResponse = gameService.listGames(listGamesRequest);
+        ListGamesResponse listGamesResponse = gameService.listGames(existingAuth.authToken());
         Assertions.assertEquals(listGamesResponse.games(), gameDB.gameDBArray);
         Assertions.assertTrue(listGamesResponse.games().contains(gameData));
     }
 
     @Test
     public void listGamesInvalidAuth() {
-        ListGamesRequest listGamesRequest = new ListGamesRequest(
-          "NOTANAUTHTOKEN"
-        );
-
-        Assertions.assertThrows(ResponseException.class, () -> gameService.listGames(listGamesRequest));
+        Assertions.assertThrows(ResponseException.class, () -> gameService.listGames("NOTANAUTHTOKEN"));
     }
 
     @Test
     public void createGame() throws ResponseException, DataAccessException {
         String gameName = "Test Game";
-        CreateGameRequest createGameRequest = new CreateGameRequest(
-                gameName,
-                existingAuth.authToken()
-        );
+        CreateGameRequest createGameRequest = new CreateGameRequest(gameName);
 
-        CreateGameResponse createGameResponse = gameService.createGame(createGameRequest);
+        CreateGameResponse createGameResponse = gameService.createGame(existingAuth.authToken(), createGameRequest);
 
         GameData gameData = new GameData(
                 createGameResponse.gameID(),
@@ -222,21 +200,21 @@ public class ServiceTests {
     @Test
     public void createGameInvalidAuth() {
         String gameName = "Test Game";
-        CreateGameRequest createGameRequest = new CreateGameRequest(
-                gameName,
-                "NOTANAUTHTOKEN"
-        );
+        CreateGameRequest createGameRequest = new CreateGameRequest(gameName);
 
-        Assertions.assertThrows(ResponseException.class, () -> gameService.createGame(createGameRequest));
+        Assertions.assertThrows(
+                ResponseException.class,
+                () -> gameService.createGame("NOTANAUTHTOKEN", createGameRequest)
+        );
     }
 
     @Test
     public void createGameBadRequest() {
-        CreateGameRequest createGameRequest = new CreateGameRequest(
-                null,
-                existingAuth.authToken()
-        );
+        CreateGameRequest createGameRequest = new CreateGameRequest(null);
 
-        Assertions.assertThrows(ResponseException.class, () -> gameService.createGame(createGameRequest));
+        Assertions.assertThrows(
+                ResponseException.class,
+                () -> gameService.createGame(existingAuth.authToken(), createGameRequest)
+        );
     }
 }
