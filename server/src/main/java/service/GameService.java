@@ -1,14 +1,20 @@
 package service;
 
+import dataaccess.DataAccessException;
 import dataaccess.memory.MemoryAuthDAO;
 import dataaccess.memory.MemoryGameDAO;
 import dataaccess.memory.database.AuthDB;
 import dataaccess.memory.database.GameDB;
+import model.AuthData;
+import model.GameData;
 import service.requests.CreateGameRequest;
 import service.requests.JoinGameRequest;
 import service.requests.ListGamesRequest;
 import service.responses.CreateGameResponse;
 import service.responses.ListGamesResponse;
+import service.responses.ResponseException;
+
+import java.util.Collection;
 
 public class GameService {
 
@@ -28,7 +34,13 @@ public class GameService {
         throw new UnsupportedOperationException("Feature not implemented.");
     }
 
-    public ListGamesResponse listGames(ListGamesRequest listGamesRequest) {
-        throw new UnsupportedOperationException("Feature not implemented.");
+    public ListGamesResponse listGames(ListGamesRequest listGamesRequest) throws ResponseException, DataAccessException {
+        AuthData authData = authDAO.getAuth(listGamesRequest.authToken());
+        if (authData == null) {
+            throw new ResponseException(401, "unauthorized");
+        }
+
+        Collection<GameData> gameList = gameDAO.listGames();
+        return new ListGamesResponse(gameList);
     }
 }

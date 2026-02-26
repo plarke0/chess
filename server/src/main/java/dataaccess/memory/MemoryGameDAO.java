@@ -26,7 +26,7 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     public Collection<GameData> listGames() throws DataAccessException {
-        throw new UnsupportedOperationException("Feature not implemented.");
+        return this.gameDB.gameDBArray;
     }
 
     public void updateGame(GameData gameData) throws DataAccessException {
