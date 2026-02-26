@@ -20,15 +20,15 @@ public class GameService {
         this.authDAO = new MemoryAuthDAO(authDB);
     }
 
-    CreateGameResponse createGame(CreateGameRequest createGameRequest) {
+    public CreateGameResponse createGame(CreateGameRequest createGameRequest) {
         throw new UnsupportedOperationException("Feature not implemented.");
     }
 
-    void joinGame(JoinGameRequest joinGameRequest) {
+    public void joinGame(JoinGameRequest joinGameRequest) {
         throw new UnsupportedOperationException("Feature not implemented.");
     }
 
-    ListGamesResponse listGames(ListGamesRequest listGamesRequest) {
+    public ListGamesResponse listGames(ListGamesRequest listGamesRequest) {
         throw new UnsupportedOperationException("Feature not implemented.");
     }
 }
