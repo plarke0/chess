@@ -37,6 +37,9 @@ public class Server {
         javalin.post("/user", this::registerUser);
         javalin.post("/session", this::loginUser);
         javalin.delete("/session", this::logoutUser);
+        javalin.get("/game", this::listGames);
+        javalin.post("/game", this::createGame);
+        javalin.put("/game", this::joinGame);
 
         javalin.exception(ResponseException.class, this::responseExceptionHandler);
         javalin.exception(DataAccessException.class, this::dataAccessExceptionHandler);
@@ -70,6 +73,18 @@ public class Server {
     private void logoutUser(Context context) throws ResponseException, DataAccessException {
         LogoutRequest logoutRequest = new LogoutRequest(context.header("authorization"));
         userService.logout(logoutRequest);
+    }
+
+    private void listGames(Context context) throws ResponseException, DataAccessException {
+        throw new UnsupportedOperationException("Feature not implemented.");
+    }
+
+    private void createGame(Context context) throws ResponseException, DataAccessException {
+        throw new UnsupportedOperationException("Feature not implemented.");
+    }
+
+    private void joinGame(Context context) throws ResponseException, DataAccessException {
+        throw new UnsupportedOperationException("Feature not implemented.");
     }
 
     private void responseExceptionHandler(ResponseException e, Context context) {
