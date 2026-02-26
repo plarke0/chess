@@ -11,10 +11,7 @@ import service.ClearService;
 import service.GameService;
 import service.UserService;
 import service.requests.*;
-import service.responses.ListGamesResponse;
-import service.responses.LoginResponse;
-import service.responses.RegisterResponse;
-import service.responses.ResponseException;
+import service.responses.*;
 
 public class Server {
 
@@ -81,7 +78,10 @@ public class Server {
     }
 
     private void createGame(Context context) throws ResponseException, DataAccessException {
-        throw new UnsupportedOperationException("Feature not implemented.");
+        String authToken = context.header("authorization");
+        CreateGameRequest createGameRequest = new Gson().fromJson(context.body(), CreateGameRequest.class);
+        CreateGameResponse createGameResponse = gameService.createGame(authToken, createGameRequest);
+        context.result(new Gson().toJson(createGameResponse));
     }
 
     private void joinGame(Context context) throws ResponseException, DataAccessException {

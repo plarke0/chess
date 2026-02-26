@@ -1,5 +1,6 @@
 package service;
 
+import chess.ChessGame;
 import dataaccess.DataAccessException;
 import dataaccess.memory.MemoryAuthDAO;
 import dataaccess.memory.MemoryGameDAO;
@@ -14,19 +15,41 @@ import service.responses.ListGamesResponse;
 import service.responses.ResponseException;
 
 import java.util.Collection;
+import java.util.UUID;
 
 public class GameService {
 
     private final MemoryGameDAO gameDAO;
     private final MemoryAuthDAO authDAO;
+    private int currentGameID;
 
     public GameService(GameDB gameDB, AuthDB authDB) {
         this.gameDAO = new MemoryGameDAO(gameDB);
         this.authDAO = new MemoryAuthDAO(authDB);
+        this.currentGameID = 0;
     }
 
     public CreateGameResponse createGame(String authToken, CreateGameRequest createGameRequest) throws ResponseException, DataAccessException {
-        throw new UnsupportedOperationException("Feature not implemented.");
+        if (createGameRequest.gameName() == null) {
+            throw new ResponseException(400, "bad request");
+        }
+
+        AuthData authData = authDAO.getAuth(authToken);
+        if (authData == null) {
+            throw new ResponseException(401, "unauthorized");
+        }
+
+        int newGameID = this.currentGameID;
+        GameData gameData = new GameData(
+                newGameID,
+                null,
+                null,
+                createGameRequest.gameName(),
+                new ChessGame()
+        );
+        gameDAO.insertGame(gameData);
+        this.currentGameID++;
+        return new CreateGameResponse(newGameID);
     }
 
     public void joinGame(String authToken, JoinGameRequest joinGameRequest) throws ResponseException, DataAccessException {
