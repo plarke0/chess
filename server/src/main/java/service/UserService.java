@@ -32,6 +32,12 @@ public class UserService {
                 registerRequest.password(),
                 registerRequest.email()
         );
+        if (userData.username() == null ||
+            userData.password() == null ||
+            userData.email() == null
+        ) {
+            throw new ResponseException(400, "bad request");
+        }
 
         UserData existingUser = userDAO.getUser(userData.username());
         if (existingUser != null) {
