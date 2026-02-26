@@ -36,7 +36,7 @@ public class Server {
         javalin.delete("/db", this::clear);
         javalin.post("/user", this::registerUser);
         javalin.post("/session", this::loginUser);
-        javalin.post("/session", this::logoutUser);
+        javalin.delete("/session", this::logoutUser);
 
         javalin.exception(ResponseException.class, this::responseExceptionHandler);
         javalin.exception(DataAccessException.class, this::dataAccessExceptionHandler);
@@ -68,7 +68,7 @@ public class Server {
     }
 
     private void logoutUser(Context context) throws ResponseException, DataAccessException {
-        LogoutRequest logoutRequest = new Gson().fromJson(context.body(), LogoutRequest.class);
+        LogoutRequest logoutRequest = new LogoutRequest(context.header("authorization"));
         userService.logout(logoutRequest);
     }
 
