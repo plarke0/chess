@@ -20,11 +20,16 @@ public class MemoryAuthDAO implements AuthDAO {
     }
 
     public AuthData getAuth(String authToken) throws DataAccessException {
-        throw new UnsupportedOperationException("Feature not implemented.");
+        for (AuthData auth : authDB.authDBArray) {
+            if (auth.authToken().equals(authToken)) {
+                return auth;
+            }
+        }
+        return null;
     }
 
     public void deleteAuth(AuthData authData) throws DataAccessException {
-        throw new UnsupportedOperationException("Feature not implemented.");
+        authDB.authDBArray.removeIf(auth -> auth.equals(authData));
     }
 
     public void clear() throws DataAccessException {

@@ -11,6 +11,7 @@ import service.ClearService;
 import service.GameService;
 import service.UserService;
 import service.requests.LoginRequest;
+import service.requests.LogoutRequest;
 import service.requests.RegisterRequest;
 import service.responses.LoginResponse;
 import service.responses.RegisterResponse;
@@ -35,6 +36,7 @@ public class Server {
         javalin.delete("/db", this::clear);
         javalin.post("/user", this::registerUser);
         javalin.post("/session", this::loginUser);
+        javalin.post("/session", this::logoutUser);
 
         javalin.exception(ResponseException.class, this::responseExceptionHandler);
         javalin.exception(DataAccessException.class, this::dataAccessExceptionHandler);
@@ -63,6 +65,11 @@ public class Server {
         LoginRequest loginRequest = new Gson().fromJson(context.body(), LoginRequest.class);
         LoginResponse loginResponse = userService.login(loginRequest);
         context.result(new Gson().toJson(loginResponse));
+    }
+
+    private void logoutUser(Context context) throws ResponseException, DataAccessException {
+        LogoutRequest logoutRequest = new Gson().fromJson(context.body(), LogoutRequest.class);
+        userService.logout(logoutRequest);
     }
 
     private void responseExceptionHandler(ResponseException e, Context context) {

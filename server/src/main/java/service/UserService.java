@@ -55,7 +55,7 @@ public class UserService {
 
     public LoginResponse login(LoginRequest loginRequest) throws ResponseException, DataAccessException {
         if (loginRequest.username() == null ||
-                loginRequest.password() == null
+            loginRequest.password() == null
         ) {
             throw new ResponseException(400, "bad request");
         }
@@ -77,6 +77,15 @@ public class UserService {
     }
 
     public void logout(LogoutRequest logoutRequest) throws ResponseException, DataAccessException {
-        throw new UnsupportedOperationException("Feature not implemented.");
+        if (logoutRequest.authToken() == null) {
+            throw new ResponseException(400, "bad request");
+        }
+
+        AuthData authData = authDAO.getAuth(logoutRequest.authToken());
+        if (authData == null) {
+            throw new ResponseException(401, "unauthorized");
+        }
+
+        authDAO.deleteAuth(authData);
     }
 }
