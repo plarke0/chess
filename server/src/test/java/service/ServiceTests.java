@@ -223,14 +223,28 @@ public class ServiceTests {
     public void joinGameWhiteExistingUser() throws ResponseException, DataAccessException {
         JoinGameRequest joinGameRequest = new JoinGameRequest(existingGameData.gameID(), "WHITE");
         gameService.joinGame(existingAuth.authToken(), joinGameRequest);
-        Assertions.assertEquals(existingAuth.username(), existingGameData.whiteUsername());
+        GameData expectedGameData = new GameData(
+                existingGameData.gameID(),
+                existingAuth.username(),
+                existingGameData.blackUsername(),
+                existingGameData.gameName(),
+                existingGameData.game()
+        );
+        Assertions.assertTrue(gameDB.gameDBArray.contains(expectedGameData));
     }
 
     @Test
     public void joinGameBlackExistingUser() throws ResponseException, DataAccessException {
         JoinGameRequest joinGameRequest = new JoinGameRequest(existingGameData.gameID(), "BLACK");
         gameService.joinGame(existingAuth.authToken(), joinGameRequest);
-        Assertions.assertEquals(existingAuth.username(), existingGameData.blackUsername());
+        GameData expectedGameData = new GameData(
+                existingGameData.gameID(),
+                existingGameData.whiteUsername(),
+                existingAuth.username(),
+                existingGameData.gameName(),
+                existingGameData.game()
+        );
+        Assertions.assertTrue(gameDB.gameDBArray.contains(expectedGameData));
     }
 
     @Test
