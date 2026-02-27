@@ -61,7 +61,7 @@ public class UserService {
 
         UserData userData = userDAO.getUser(loginRequest.username());
         if (userData == null) {
-            throw new ResponseException(400, "bad request");
+            throw new ResponseException(401, "unauthorized");
         }
 
         if (!loginRequest.password().equals(userData.password())) {
