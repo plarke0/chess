@@ -281,8 +281,17 @@ public class ServiceTests {
     }
 
     @Test
-    public void joinGameBadRequestPlayerColor() {
+    public void joinGameBadRequestPlayerColorIsNull() {
         JoinGameRequest joinGameRequest = new JoinGameRequest(existingGameData.gameID(), null);
+        Assertions.assertThrows(
+                ResponseException.class,
+                () -> gameService.joinGame(existingAuth.authToken(), joinGameRequest)
+        );
+    }
+
+    @Test
+    public void joinGameBadRequestPlayerColorIsGarbage() {
+        JoinGameRequest joinGameRequest = new JoinGameRequest(existingGameData.gameID(), "YELLOW");
         Assertions.assertThrows(
                 ResponseException.class,
                 () -> gameService.joinGame(existingAuth.authToken(), joinGameRequest)
