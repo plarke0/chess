@@ -85,7 +85,9 @@ public class Server {
     }
 
     private void joinGame(Context context) throws ResponseException, DataAccessException {
-        throw new UnsupportedOperationException("Feature not implemented.");
+        String authToken = context.header("authorization");
+        JoinGameRequest joinGameRequest = new Gson().fromJson(context.body(), JoinGameRequest.class);
+        gameService.joinGame(authToken, joinGameRequest);
     }
 
     private void responseExceptionHandler(ResponseException e, Context context) {

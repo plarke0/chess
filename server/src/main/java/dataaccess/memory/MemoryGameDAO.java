@@ -22,7 +22,12 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     public GameData getGame(int gameID) throws DataAccessException {
-        throw new UnsupportedOperationException("Feature not implemented.");
+        for (GameData game : this.gameDB.gameDBArray) {
+            if (game.gameID() == gameID) {
+                return game;
+            }
+        }
+        return null;
     }
 
     public Collection<GameData> listGames() throws DataAccessException {
@@ -30,7 +35,9 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     public void updateGame(GameData gameData) throws DataAccessException {
-        throw new UnsupportedOperationException("Feature not implemented.");
+        int gameID = gameData.gameID();
+        this.gameDB.gameDBArray.removeIf(game -> game.gameID() == gameID);
+        this.gameDB.gameDBArray.add(gameData);
     }
 
     public void clear() throws DataAccessException {
