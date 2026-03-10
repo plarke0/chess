@@ -83,29 +83,36 @@ public class DatabaseManager {
             `email` varchar(256) NOT NULL,
             PRIMARY KEY (`id`)
             )
+            """,
+            """
             CREATE TABLE IF NOT EXISTS  passwords (
             `user` int NOT NULL,
             `password` varchar(256) NOT NULL,
-            FOREIGN KEY (`user`)
+            FOREIGN KEY (`user`) REFERENCES users(id)
             )
+            """,
+            """
             CREATE TABLE IF NOT EXISTS  auths (
             `user` int NOT NULL,
             `auth_token` varchar(256) NOT NULL,
-            FOREIGN KEY (`user`)
+            FOREIGN KEY (`user`) REFERENCES users(id)
             )
+            """,
+            """
             CREATE TABLE IF NOT EXISTS  games (
             `id` int NOT NULL AUTO_INCREMENT,
             `game_name` varchar(256) NOT NULL,
             `white_user` int NOT NULL,
             `black_user` int NOT NULL,
             `board` TEXT NOT NULL,
-            FOREIGN KEY (`white_user`),
-            FOREIGN KEY (`black_user`)
+            PRIMARY KEY (id),
+            FOREIGN KEY (`white_user`) REFERENCES users(id),
+            FOREIGN KEY (`black_user`) REFERENCES users(id)
             )
             """
     };
 
-    static public void initializeDatabaseTables() throws DataAccessException {
+    static public void initializeDatabase() throws DataAccessException {
         DatabaseManager.createDatabase();
         try (Connection conn = DatabaseManager.getConnection()) {
             for (String statement : createStatements) {
@@ -114,7 +121,7 @@ public class DatabaseManager {
                 }
             }
         } catch (SQLException ex) {
-            throw new DataAccessException("failed to initialize tables", ex);
+            throw new DataAccessException("failed to initialize tables: " + ex.getMessage());
         }
     }
 }

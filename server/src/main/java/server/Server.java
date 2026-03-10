@@ -3,9 +3,6 @@ package server;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
-import dataaccess.memory.database.AuthDB;
-import dataaccess.memory.database.GameDB;
-import dataaccess.memory.database.UserDB;
 import io.javalin.*;
 import io.javalin.http.Context;
 import service.ClearService;
@@ -23,8 +20,7 @@ public class Server {
 
     public Server() {
         try {
-            DatabaseManager.createDatabase();
-            DatabaseManager.initializeDatabaseTables();
+            DatabaseManager.initializeDatabase();
         } catch (DataAccessException exception) {
             throw new RuntimeException(exception.getMessage());
         }
