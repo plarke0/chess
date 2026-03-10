@@ -8,8 +8,9 @@ import java.util.Collection;
 import java.util.List;
 
 public class MySQLGameDAO implements GameDAO {
-    public void insertGame(GameData gameData) throws DataAccessException {
+    public int insertGame(GameData gameData) throws DataAccessException {
 
+        return 0;
     }
 
     public GameData getGame(int gameID) throws DataAccessException {

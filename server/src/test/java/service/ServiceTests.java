@@ -44,9 +44,9 @@ public class ServiceTests {
         userDB = new UserDB();
         gameDB = new GameDB();
 
-        userService = new UserService(userDB, authDB);
-        gameService = new GameService(gameDB, authDB);
-        clearService = new ClearService(authDB, userDB, gameDB);
+        userService = new UserService();
+        gameService = new GameService();
+        clearService = new ClearService();
 
         userDB.userDBArray.add(existingUser);
 

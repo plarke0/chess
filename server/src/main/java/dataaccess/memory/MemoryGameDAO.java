@@ -7,7 +7,6 @@ import model.GameData;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 public class MemoryGameDAO implements GameDAO {
 
@@ -17,8 +16,9 @@ public class MemoryGameDAO implements GameDAO {
         this.gameDB = gameDB;
     }
 
-    public void insertGame(GameData gameData) throws DataAccessException {
+    public int insertGame(GameData gameData) throws DataAccessException {
         this.gameDB.gameDBArray.add(gameData);
+        return 0;
     }
 
     public GameData getGame(int gameID) throws DataAccessException {

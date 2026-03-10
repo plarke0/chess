@@ -1,10 +1,10 @@
 package service;
 
+import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
-import dataaccess.memory.MemoryAuthDAO;
-import dataaccess.memory.MemoryUserDAO;
-import dataaccess.memory.database.AuthDB;
-import dataaccess.memory.database.UserDB;
+import dataaccess.UserDAO;
+import dataaccess.mysql.MySQLAuthDAO;
+import dataaccess.mysql.MySQLUserDAO;
 import model.AuthData;
 import model.UserData;
 import service.requests.LoginRequest;
@@ -17,12 +17,12 @@ import java.util.UUID;
 
 public class UserService {
 
-    private final MemoryUserDAO userDAO;
-    private final MemoryAuthDAO authDAO;
+    UserDAO userDAO;
+    AuthDAO authDAO;
 
-    public UserService(UserDB userDB, AuthDB authDB) {
-        this.userDAO = new MemoryUserDAO(userDB);
-        this.authDAO = new MemoryAuthDAO(authDB);
+    public UserService() {
+        this.userDAO = new MySQLUserDAO();
+        this.authDAO = new MySQLAuthDAO();
     }
 
     public RegisterResponse register(RegisterRequest registerRequest) throws ResponseException, DataAccessException {

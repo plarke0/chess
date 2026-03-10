@@ -74,4 +74,47 @@ public class DatabaseManager {
         var port = Integer.parseInt(props.getProperty("db.port"));
         connectionUrl = String.format("jdbc:mysql://%s:%d", host, port);
     }
+
+    private static final String[] createStatements = {
+            """
+            CREATE TABLE IF NOT EXISTS  users (
+            `id` int NOT NULL AUTO_INCREMENT,
+            `username` varchar(256) NOT NULL,
+            `email` varchar(256) NOT NULL,
+            PRIMARY KEY (`id`)
+            )
+            CREATE TABLE IF NOT EXISTS  passwords (
+            `user` int NOT NULL,
+            `password` varchar(256) NOT NULL,
+            FOREIGN KEY (`user`)
+            )
+            CREATE TABLE IF NOT EXISTS  auths (
+            `user` int NOT NULL,
+            `auth_token` varchar(256) NOT NULL,
+            FOREIGN KEY (`user`)
+            )
+            CREATE TABLE IF NOT EXISTS  games (
+            `id` int NOT NULL AUTO_INCREMENT,
+            `game_name` varchar(256) NOT NULL,
+            `white_user` int NOT NULL,
+            `black_user` int NOT NULL,
+            `board` TEXT NOT NULL,
+            FOREIGN KEY (`white_user`),
+            FOREIGN KEY (`black_user`)
+            )
+            """
+    };
+
+    static public void initializeDatabaseTables() throws DataAccessException {
+        DatabaseManager.createDatabase();
+        try (Connection conn = DatabaseManager.getConnection()) {
+            for (String statement : createStatements) {
+                try (var preparedStatement = conn.prepareStatement(statement)) {
+                    preparedStatement.executeUpdate();
+                }
+            }
+        } catch (SQLException ex) {
+            throw new DataAccessException("failed to initialize tables", ex);
+        }
+    }
 }

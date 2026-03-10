@@ -2,6 +2,7 @@ package server;
 
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
+import dataaccess.DatabaseManager;
 import dataaccess.memory.database.AuthDB;
 import dataaccess.memory.database.GameDB;
 import dataaccess.memory.database.UserDB;
@@ -15,19 +16,21 @@ import service.responses.*;
 
 public class Server {
 
-    private final AuthDB authDB = new AuthDB();
-    private final UserDB userDB = new UserDB();
-    private final GameDB gameDB = new GameDB();
-
     private final UserService userService;
     private final GameService gameService;
     private final ClearService clearService;
     private final Javalin javalin;
 
     public Server() {
-        this.userService = new UserService(userDB, authDB);
-        this.gameService = new GameService(gameDB, authDB);
-        this.clearService = new ClearService(authDB, userDB, gameDB);
+        try {
+            DatabaseManager.createDatabase();
+            DatabaseManager.initializeDatabaseTables();
+        } catch (DataAccessException exception) {
+            throw new RuntimeException(exception.getMessage());
+        }
+        this.userService = new UserService();
+        this.gameService = new GameService();
+        this.clearService = new ClearService();
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
         javalin.delete("/db", this::clear);
         javalin.post("/user", this::registerUser);

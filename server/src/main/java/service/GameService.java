@@ -1,12 +1,11 @@
 package service;
 
 import chess.ChessGame;
+import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
-import dataaccess.memory.MemoryAuthDAO;
-import dataaccess.memory.MemoryGameDAO;
-import dataaccess.memory.database.AuthDB;
-import dataaccess.memory.database.GameDB;
+import dataaccess.mysql.MySQLAuthDAO;
+import dataaccess.mysql.MySQLGameDAO;
 import model.AuthData;
 import model.GameData;
 import service.requests.CreateGameRequest;
@@ -16,18 +15,15 @@ import service.responses.ListGamesResponse;
 import service.responses.ResponseException;
 
 import java.util.Collection;
-import java.util.UUID;
 
 public class GameService {
 
-    private final MemoryGameDAO gameDAO;
-    private final MemoryAuthDAO authDAO;
-    private int currentGameID;
+    GameDAO gameDAO;
+    AuthDAO authDAO;
 
-    public GameService(GameDB gameDB, AuthDB authDB) {
-        this.gameDAO = new MemoryGameDAO(gameDB);
-        this.authDAO = new MemoryAuthDAO(authDB);
-        this.currentGameID = 1;
+    public GameService() {
+        this.gameDAO = new MySQLGameDAO();
+        this.authDAO = new MySQLAuthDAO();
     }
 
     public CreateGameResponse createGame(String authToken, CreateGameRequest createGameRequest) throws ResponseException, DataAccessException {
@@ -40,16 +36,14 @@ public class GameService {
             throw new ResponseException(401, "unauthorized");
         }
 
-        int newGameID = this.currentGameID;
         GameData gameData = new GameData(
-                newGameID,
+                -1,
                 null,
                 null,
                 createGameRequest.gameName(),
                 new ChessGame()
         );
-        gameDAO.insertGame(gameData);
-        this.currentGameID++;
+        int newGameID = gameDAO.insertGame(gameData);
         return new CreateGameResponse(newGameID);
     }
 
