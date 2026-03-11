@@ -9,7 +9,16 @@ import java.sql.SQLException;
 
 public class MySQLAuthDAO implements AuthDAO {
     public void insertAuth(AuthData authData) throws DataAccessException {
-
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(
+                    "INSERT INTO auths (user, auth_token) VALUES ((SELECT id FROM users WHERE username=?), ?)")) {
+                preparedStatement.setString(1, authData.username());
+                preparedStatement.setString(2, authData.authToken());
+                preparedStatement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getMessage());
+        }
     }
 
     public AuthData getAuth(String authToken) throws DataAccessException {
