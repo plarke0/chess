@@ -27,7 +27,14 @@ public class MySQLAuthDAO implements AuthDAO {
     }
 
     public void deleteAuth(AuthData authData) throws DataAccessException {
-
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement("DELETE FROM auths WHERE auth_token=?")) {
+                preparedStatement.setString(1, authData.authToken());
+                preparedStatement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getMessage());
+        }
     }
 
     public void clear() throws DataAccessException {
