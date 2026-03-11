@@ -66,8 +66,7 @@ public class UserService {
             throw new ResponseException(401, "unauthorized");
         }
 
-        String encryptedPassword = BCrypt.hashpw(loginRequest.password(), BCrypt.gensalt());
-        if (!encryptedPassword.equals(userData.password())) {
+        if (!BCrypt.checkpw(loginRequest.password(), userData.password())) {
             throw new ResponseException(401, "unauthorized");
         }
 
