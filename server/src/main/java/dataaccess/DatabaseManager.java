@@ -102,12 +102,10 @@ public class DatabaseManager {
             CREATE TABLE IF NOT EXISTS  games (
             `id` int NOT NULL AUTO_INCREMENT,
             `game_name` varchar(256) NOT NULL,
-            `white_user` int NOT NULL,
-            `black_user` int NOT NULL,
+            `white_user` varchar(256),
+            `black_user` varchar(256),
             `board` TEXT NOT NULL,
-            PRIMARY KEY (id),
-            FOREIGN KEY (`white_user`) REFERENCES users(id),
-            FOREIGN KEY (`black_user`) REFERENCES users(id)
+            PRIMARY KEY (id)
             )
             """
     };
