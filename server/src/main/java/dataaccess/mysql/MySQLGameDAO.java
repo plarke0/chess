@@ -11,7 +11,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 public class MySQLGameDAO implements GameDAO {
     public int insertGame(GameData gameData) throws DataAccessException {
