@@ -13,9 +13,9 @@ import service.responses.*;
 
 public class Server {
 
-    private final UserService userService;
-    private final GameService gameService;
-    private final ClearService clearService;
+    private final UserService userService = new UserService();
+    private final GameService gameService = new GameService();
+    private final ClearService clearService = new ClearService();
     private final Javalin javalin;
 
     public Server() {
@@ -24,9 +24,6 @@ public class Server {
         } catch (DataAccessException exception) {
             throw new RuntimeException(exception.getMessage());
         }
-        this.userService = new UserService();
-        this.gameService = new GameService();
-        this.clearService = new ClearService();
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
         javalin.delete("/db", this::clear);
         javalin.post("/user", this::registerUser);

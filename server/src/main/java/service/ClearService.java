@@ -1,9 +1,6 @@
 package service;
 
-import dataaccess.AuthDAO;
-import dataaccess.DataAccessException;
-import dataaccess.GameDAO;
-import dataaccess.UserDAO;
+import dataaccess.*;
 import dataaccess.mysql.MySQLAuthDAO;
 import dataaccess.mysql.MySQLGameDAO;
 import dataaccess.mysql.MySQLUserDAO;
@@ -24,5 +21,6 @@ public class ClearService {
         authDAO.clear();
         gameDAO.clear();
         userDAO.clear();
+        DatabaseManager.initializeDatabase();
     }
 }
