@@ -12,6 +12,7 @@ import service.requests.RegisterRequest;
 import service.responses.LoginResponse;
 import service.responses.RegisterResponse;
 import service.responses.ResponseException;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.UUID;
 
@@ -32,9 +33,10 @@ public class UserService {
         ) {
             throw new ResponseException(400, "bad request");
         }
+        String encryptedPassword = BCrypt.hashpw(registerRequest.password(), BCrypt.gensalt());
         UserData userData = new UserData(
                 registerRequest.username(),
-                registerRequest.password(),
+                encryptedPassword,
                 registerRequest.email()
         );
 
@@ -64,7 +66,8 @@ public class UserService {
             throw new ResponseException(401, "unauthorized");
         }
 
-        if (!loginRequest.password().equals(userData.password())) {
+        String encryptedPassword = BCrypt.hashpw(loginRequest.password(), BCrypt.gensalt());
+        if (!encryptedPassword.equals(userData.password())) {
             throw new ResponseException(401, "unauthorized");
         }
 
