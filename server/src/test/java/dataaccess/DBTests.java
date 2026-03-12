@@ -39,13 +39,9 @@ public class DBTests {
 
     @BeforeEach
     public void setup() {
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement("DROP DATABASE chess")) {
-                preparedStatement.executeUpdate();
-            }
-        } catch (SQLException | DataAccessException e) {
-            throw new RuntimeException(e.getMessage());
-        }
+        Assertions.assertDoesNotThrow(() -> mySQLAuthDAO.clear());
+        Assertions.assertDoesNotThrow(() -> mySQLGameDAO.clear());
+        Assertions.assertDoesNotThrow(() -> mySQLUserDAO.clear());
         try {
             DatabaseManager.initializeDatabase();
         } catch (DataAccessException exception) {
