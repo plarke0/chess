@@ -106,4 +106,104 @@ public class DBTests {
             throw new RuntimeException(e.getMessage());
         }
     }
+
+    @Test
+    public void clearTestPositive() {
+
+    }
+
+    @Test
+    public void clearTestNegative() {
+
+    }
+
+    @Test
+    public void insertAuthTestPositive() {
+
+    }
+
+    @Test
+    public void insertAuthTestNegative() {
+
+    }
+
+    @Test
+    public void getAuthTestPositive() {
+
+    }
+
+    @Test
+    public void getAuthTestNegative() {
+
+    }
+
+    @Test
+    public void deleteAuthTestPositive() {
+
+    }
+
+    @Test
+    public void deleteAuthTestNegative() {
+
+    }
+
+    @Test
+    public void insertUserTestPositive() {
+
+    }
+
+    @Test
+    public void insertUserTestNegative() {
+
+    }
+
+    @Test
+    public void getUserTestPositive() {
+
+    }
+
+    @Test
+    public void getUserTestNegative() {
+
+    }
+
+    @Test
+    public void insertGameTestPositive() {
+
+    }
+
+    @Test
+    public void insertGameTestNegative() {
+
+    }
+
+    @Test
+    public void getGameTestPositive() {
+
+    }
+
+    @Test
+    public void getGameTestNegative() {
+
+    }
+
+    @Test
+    public void listGamesTestPositive() {
+
+    }
+
+    @Test
+    public void listGamesTestNegative() {
+
+    }
+
+    @Test
+    public void updateGameTestPositive() {
+
+    }
+
+    @Test
+    public void updateGameTestNegative() {
+
+    }
 }
