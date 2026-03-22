@@ -1,11 +1,11 @@
 package dataaccess.mysql;
 
 import chess.ChessGame;
-import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
 import dataaccess.GameDAO;
 import model.GameData;
+import server.Serializer;
 
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -20,7 +20,7 @@ public class MySQLGameDAO implements GameDAO {
                 preparedStatement.setString(1, gameData.gameName());
                 preparedStatement.setString(2, gameData.whiteUsername());
                 preparedStatement.setString(3, gameData.blackUsername());
-                preparedStatement.setString(4, new Gson().toJson(gameData.game()));
+                preparedStatement.setString(4, Serializer.serialize(gameData.game()));
                 preparedStatement.executeUpdate();
 
                 var resultSet = preparedStatement.getGeneratedKeys();
@@ -45,7 +45,7 @@ public class MySQLGameDAO implements GameDAO {
                 String gameName = rs.getString(1);
                 String whiteUsername = rs.getString(2);
                 String blackUsername = rs.getString(3);
-                ChessGame game = new Gson().fromJson(rs.getString(4), ChessGame.class);
+                ChessGame game = Serializer.deserialize(rs.getString(4), ChessGame.class);
                 return new GameData(gameID, whiteUsername, blackUsername, gameName, game);
             }
         } catch (SQLException e) {
@@ -64,7 +64,7 @@ public class MySQLGameDAO implements GameDAO {
                     String gameName = rs.getString(2);
                     String whiteUsername = rs.getString(3);
                     String blackUsername = rs.getString(4);
-                    ChessGame game = new Gson().fromJson(rs.getString(5), ChessGame.class);
+                    ChessGame game = Serializer.deserialize(rs.getString(5), ChessGame.class);
                     gameList.add(new GameData(gameID, whiteUsername, blackUsername, gameName, game));
                 }
                 return gameList;
@@ -80,7 +80,7 @@ public class MySQLGameDAO implements GameDAO {
                     "UPDATE games SET white_user=?, black_user=?, board=? WHERE id=?")) {
                 preparedStatement.setString(1, gameData.whiteUsername());
                 preparedStatement.setString(2, gameData.blackUsername());
-                preparedStatement.setString(3, new Gson().toJson(gameData.game()));
+                preparedStatement.setString(3, Serializer.serialize(gameData.game()));
                 preparedStatement.setInt(4, gameData.gameID());
                 preparedStatement.executeUpdate();
             }

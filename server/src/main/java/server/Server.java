@@ -1,6 +1,5 @@
 package server;
 
-import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
 import io.javalin.*;
@@ -51,15 +50,15 @@ public class Server {
     }
 
     private void registerUser(Context context) throws ResponseException, DataAccessException {
-        RegisterRequest registerRequest = new Gson().fromJson(context.body(), RegisterRequest.class);
+        RegisterRequest registerRequest = Serializer.deserialize(context.body(), RegisterRequest.class);
         RegisterResponse registerResponse = userService.register(registerRequest);
-        context.result(new Gson().toJson(registerResponse));
+        context.result(Serializer.serialize(registerResponse));
     }
 
     private void loginUser(Context context) throws ResponseException, DataAccessException {
-        LoginRequest loginRequest = new Gson().fromJson(context.body(), LoginRequest.class);
+        LoginRequest loginRequest = Serializer.deserialize(context.body(), LoginRequest.class);
         LoginResponse loginResponse = userService.login(loginRequest);
-        context.result(new Gson().toJson(loginResponse));
+        context.result(Serializer.serialize(loginResponse));
     }
 
     private void logoutUser(Context context) throws ResponseException, DataAccessException {
@@ -70,19 +69,19 @@ public class Server {
     private void listGames(Context context) throws ResponseException, DataAccessException {
         String authToken = context.header("authorization");
         ListGamesResponse listGamesResponse = gameService.listGames(authToken);
-        context.result(new Gson().toJson(listGamesResponse));
+        context.result(Serializer.serialize(listGamesResponse));
     }
 
     private void createGame(Context context) throws ResponseException, DataAccessException {
         String authToken = context.header("authorization");
-        CreateGameRequest createGameRequest = new Gson().fromJson(context.body(), CreateGameRequest.class);
+        CreateGameRequest createGameRequest = Serializer.deserialize(context.body(), CreateGameRequest.class);
         CreateGameResponse createGameResponse = gameService.createGame(authToken, createGameRequest);
-        context.result(new Gson().toJson(createGameResponse));
+        context.result(Serializer.serialize(createGameResponse));
     }
 
     private void joinGame(Context context) throws ResponseException, DataAccessException {
         String authToken = context.header("authorization");
-        JoinGameRequest joinGameRequest = new Gson().fromJson(context.body(), JoinGameRequest.class);
+        JoinGameRequest joinGameRequest = Serializer.deserialize(context.body(), JoinGameRequest.class);
         gameService.joinGame(authToken, joinGameRequest);
     }
 
