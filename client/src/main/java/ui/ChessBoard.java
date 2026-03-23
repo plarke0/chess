@@ -31,7 +31,11 @@ public class ChessBoard {
 
     }
 
-    private static void drawRowHeaders() {
+    private static void drawRows() {
+
+    }
+
+    private static void drawRowHeader() {
 
     }
 
