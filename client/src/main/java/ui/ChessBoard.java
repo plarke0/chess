@@ -2,6 +2,9 @@ package ui;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+
+import chess.ChessPiece;
+import chess.ChessPosition;
 import ui.EscapeSequences.*;
 
 public class ChessBoard {
@@ -11,8 +14,17 @@ public class ChessBoard {
 
     private static PrintStream out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
 
-    public static void drawBoard() {
+    public static void drawBoard(chess.ChessBoard board, Boolean isWhiteView) {
+        var boardArray = new ChessPiece[8][8];
+        for (ChessPosition position : board) {
+            int row = position.getRow();
+            int col = position.getColumn();
+            boardArray[row-1][col-1] = board.getPiece(position);
+        }
 
+        drawColumnHeaders(isWhiteView);
+        drawRows();
+        drawColumnHeaders(isWhiteView);
     }
 
     private static void drawColumnHeaders() {
