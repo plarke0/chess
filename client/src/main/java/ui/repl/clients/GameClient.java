@@ -1,8 +1,15 @@
 package ui.repl.clients;
 
-public class GameClient implements Client{
-    public GameClient(String serverURL) {
+import client.ServerFacade;
 
+public class GameClient implements Client{
+
+    private final String serverURL;
+    private final ServerFacade serverFacade;
+
+    public GameClient(String serverURL) {
+        this.serverURL = serverURL;
+        this.serverFacade = new ServerFacade(this.serverURL);
     }
 
     public ClientResponse eval(String line) {

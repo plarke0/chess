@@ -1,8 +1,15 @@
 package ui.repl.clients;
 
-public class SignedInClient implements Client{
-    public SignedInClient(String serverURL) {
+import client.ServerFacade;
 
+public class SignedInClient implements Client{
+
+    private final String serverURL;
+    private final ServerFacade serverFacade;
+
+    public SignedInClient(String serverURL) {
+        this.serverURL = serverURL;
+        this.serverFacade = new ServerFacade(this.serverURL);
     }
 
     public ClientResponse eval(String line) {
