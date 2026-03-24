@@ -33,7 +33,7 @@ public class ChessBoard {
 
         out.print(EMPTY.repeat(SQUARE_SIZE_IN_CHARACTERS));
         for (int headerNumber = 0; headerNumber < BOARD_SIZE_IN_SQUARES; headerNumber++) {
-            drawHeader(headerNumber, isWhiteView);
+            drawColumnHeader(headerNumber, isWhiteView);
         }
 
         out.print(EMPTY.repeat(SQUARE_SIZE_IN_CHARACTERS));
@@ -42,7 +42,21 @@ public class ChessBoard {
         out.println();
     }
 
-    private static void drawHeader(int headerNumber, Boolean isWhiteView) {
+    private static void drawColumnHeader(int headerNumber, Boolean isWhiteView) {
+        String[] headers = {"a", "b", "c", "d", "e", "f", "g", "h"};
+        drawHeader(headerNumber, isWhiteView, headers);
+    }
+
+    private static void drawRows() {
+
+    }
+
+    private static void drawRowHeader(int headerNumber, Boolean isWhiteView) {
+        String[] headers = {"8", "7", "6", "5", "4", "3", "2", "1"};
+        drawHeader(headerNumber, isWhiteView, headers);
+    }
+
+    private static void drawHeader(int headerNumber, Boolean isWhiteView, String[] headers) {
         out.print(SET_BG_COLOR_LIGHT_GREY);
         out.print(SET_TEXT_COLOR_BLACK);
 
@@ -50,21 +64,12 @@ public class ChessBoard {
         if (!isWhiteView) {
             headerIndex = 7 - headerNumber;
         }
-        String[] headers = {"a", "b", "c", "d", "e", "f", "g", "h"};
         int prefixLength = SQUARE_SIZE_IN_CHARACTERS / 2;
         int suffixLength = SQUARE_SIZE_IN_CHARACTERS - prefixLength - 1;
 
         out.print(EMPTY.repeat(prefixLength));
         printHeaderText(headers[headerIndex]);
         out.print(EMPTY.repeat(suffixLength));
-    }
-
-    private static void drawRows() {
-
-    }
-
-    private static void drawRowHeader() {
-
     }
 
     private static void printHeaderText(String headerValue) {
