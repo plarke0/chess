@@ -13,9 +13,9 @@ public class REPL {
     Client currentClient;
 
     public REPL(String serverURL) {
-         signedOutClient = SignedOutClient(serverURL);
-         signedInClient = SignedInClient(serverURL);
-         gameClient = GameClient(serverURL);
+         signedOutClient = new SignedOutClient(serverURL);
+         signedInClient = new SignedInClient(serverURL);
+         gameClient = new GameClient(serverURL);
          currentClient = signedOutClient;
     }
 
