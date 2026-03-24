@@ -4,11 +4,14 @@ import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
 import io.javalin.*;
 import io.javalin.http.Context;
+import requests.CreateGameRequest;
+import requests.JoinGameRequest;
+import requests.LoginRequest;
+import requests.RegisterRequest;
+import responses.*;
 import service.ClearService;
 import service.GameService;
 import service.UserService;
-import service.requests.*;
-import service.responses.*;
 
 public class Server {
 

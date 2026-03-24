@@ -8,11 +8,11 @@ import dataaccess.mysql.MySQLAuthDAO;
 import dataaccess.mysql.MySQLGameDAO;
 import model.AuthData;
 import model.GameData;
-import service.requests.CreateGameRequest;
-import service.requests.JoinGameRequest;
-import service.responses.CreateGameResponse;
-import service.responses.ListGamesResponse;
-import service.responses.ResponseException;
+import requests.CreateGameRequest;
+import requests.JoinGameRequest;
+import responses.CreateGameResponse;
+import responses.ListGamesResponse;
+import responses.ResponseException;
 
 import java.util.Collection;
 

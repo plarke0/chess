@@ -1,4 +1,4 @@
-package service.responses;
+package responses;
 
 public class ResponseException extends Exception {
 

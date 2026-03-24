@@ -7,11 +7,11 @@ import dataaccess.mysql.MySQLAuthDAO;
 import dataaccess.mysql.MySQLUserDAO;
 import model.AuthData;
 import model.UserData;
-import service.requests.LoginRequest;
-import service.requests.RegisterRequest;
-import service.responses.LoginResponse;
-import service.responses.RegisterResponse;
-import service.responses.ResponseException;
+import requests.LoginRequest;
+import requests.RegisterRequest;
+import responses.LoginResponse;
+import responses.RegisterResponse;
+import responses.ResponseException;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.UUID;
