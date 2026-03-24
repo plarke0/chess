@@ -19,4 +19,28 @@ public class SignedInClient implements Client{
     public String getPromptTitle() {
         return "LOGGED_IN";
     }
+
+    private ClientResponse help() {
+        return null;
+    }
+
+    private ClientResponse logout() {
+        return null;
+    }
+
+    private ClientResponse createGame() {
+        return null;
+    }
+
+    private ClientResponse listGames() {
+        return null;
+    }
+
+    private ClientResponse playGame() {
+        return null;
+    }
+
+    private ClientResponse observeGame() {
+        return null;
+    }
 }

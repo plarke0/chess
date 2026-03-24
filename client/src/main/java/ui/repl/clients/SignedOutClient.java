@@ -19,4 +19,20 @@ public class SignedOutClient implements Client{
     public String getPromptTitle() {
         return "LOGGED_OUT";
     }
+
+    private ClientResponse help() {
+        return null;
+    }
+
+    private ClientResponse quit() {
+        return null;
+    }
+
+    private ClientResponse login() {
+        return null;
+    }
+
+    private ClientResponse register() {
+        return null;
+    }
 }

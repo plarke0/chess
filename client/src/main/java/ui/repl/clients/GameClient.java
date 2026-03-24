@@ -19,4 +19,12 @@ public class GameClient implements Client{
     public String getPromptTitle() {
         return "IN_GAME";
     }
+
+    private ClientResponse help() {
+        return null;
+    }
+
+    private ClientResponse exit() {
+        return null;
+    }
 }
