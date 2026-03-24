@@ -38,6 +38,7 @@ public class REPL {
                     case "quit" -> {
                         break replLoop;
                     }
+                    case null, default -> {}
                 }
                 result = response.result();
                 System.out.print(result);
