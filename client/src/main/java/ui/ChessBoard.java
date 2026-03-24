@@ -9,9 +9,6 @@ import static ui.EscapeSequences.*;
 
 public class ChessBoard {
 
-    private static final int BOARD_SIZE_IN_SQUARES = 8;
-    private static final int SQUARE_SIZE_IN_CHARACTERS = 3;
-
     private static PrintStream out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
 
     public static void drawBoard(chess.ChessBoard board, Boolean isWhiteView) {
@@ -23,7 +20,7 @@ public class ChessBoard {
         }
 
         drawColumnHeaders(isWhiteView);
-        drawRows();
+        drawRows(isWhiteView);
         drawColumnHeaders(isWhiteView);
     }
 
@@ -31,14 +28,13 @@ public class ChessBoard {
         out.print(SET_BG_COLOR_LIGHT_GREY);
         out.print(SET_TEXT_COLOR_BLACK);
 
-        out.print(EMPTY.repeat(SQUARE_SIZE_IN_CHARACTERS));
-        for (int headerNumber = 0; headerNumber < BOARD_SIZE_IN_SQUARES; headerNumber++) {
+        out.print(EMPTY);
+        for (int headerNumber = 0; headerNumber < 8; headerNumber++) {
             drawColumnHeader(headerNumber, isWhiteView);
         }
+        out.print(EMPTY);
 
-        out.print(EMPTY.repeat(SQUARE_SIZE_IN_CHARACTERS));
         resetColors();
-
         out.println();
     }
 
@@ -47,8 +43,15 @@ public class ChessBoard {
         drawHeader(headerNumber, isWhiteView, headers);
     }
 
-    private static void drawRows() {
+    private static void drawRows(Boolean isWhiteView) {
+        for (int i = 0; i < 8; i++) {
+            drawRowHeader(i, isWhiteView);
+            drawBoardRow();
+            drawRowHeader(i, isWhiteView);
 
+            resetColors();
+            out.println();
+        }
     }
 
     private static void drawRowHeader(int headerNumber, Boolean isWhiteView) {
@@ -64,19 +67,15 @@ public class ChessBoard {
         if (!isWhiteView) {
             headerIndex = 7 - headerNumber;
         }
-        int prefixLength = SQUARE_SIZE_IN_CHARACTERS / 2;
-        int suffixLength = SQUARE_SIZE_IN_CHARACTERS - prefixLength - 1;
 
-        out.print(EMPTY.repeat(prefixLength));
         printHeaderText(headers[headerIndex]);
-        out.print(EMPTY.repeat(suffixLength));
     }
 
     private static void printHeaderText(String headerValue) {
         out.print(SET_BG_COLOR_LIGHT_GREY);
         out.print(SET_TEXT_COLOR_BLACK);
 
-        out.print(headerValue);
+        out.print("\u2003" + headerValue + " ");
     }
 
     private static void drawBoardRow() {
