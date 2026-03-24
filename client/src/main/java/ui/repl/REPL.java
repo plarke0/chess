@@ -24,7 +24,7 @@ public class REPL {
 
         Scanner scanner = new Scanner(System.in);
         var result = "";
-        loop:
+        replLoop:
         while (!result.equals("tempquit")) { // Change to true. Handle quit signed out client
             printPrompt();
             String line = scanner.nextLine();
@@ -36,7 +36,7 @@ public class REPL {
                     case "signedInClient" -> currentClient = signedInClient;
                     case "gameClient" -> currentClient = gameClient;
                     case "quit" -> {
-                        break loop;
+                        break replLoop;
                     }
                 }
                 result = response.result();
