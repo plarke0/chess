@@ -12,6 +12,8 @@ public class REPL {
     private final GameClient gameClient;
     Client currentClient;
 
+    public ClientData clientData = new ClientData();
+
     public REPL(String serverURL) {
          signedOutClient = new SignedOutClient(serverURL);
          signedInClient = new SignedInClient(serverURL);
@@ -30,7 +32,7 @@ public class REPL {
             String line = scanner.nextLine();
 
             try {
-                ClientResponse response = currentClient.eval(line);
+                ClientResponse response = currentClient.eval(line, clientData);
                 switch (response.newClient()) {
                     case "signedOutClient" -> currentClient = signedOutClient;
                     case "signedInClient" -> currentClient = signedInClient;
@@ -40,6 +42,12 @@ public class REPL {
                     }
                     case null, default -> {}
                 }
+
+                ClientData newClientData = response.newClientData();
+                if (newClientData != null) {
+                    clientData = newClientData;
+                }
+
                 result = response.result();
                 System.out.print(result);
             } catch (Throwable throwable) {
