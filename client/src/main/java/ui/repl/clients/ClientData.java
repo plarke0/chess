@@ -9,6 +9,14 @@ public class ClientData {
     private String authToken;
     private Collection<GameData> activeGames;
 
+    public ClientData() {}
+
+    public ClientData(String username, String authToken, Collection<GameData> activeGames) {
+        this.username = username;
+        this.authToken = authToken;
+        this.activeGames = activeGames;
+    }
+
     public String getUsername() {
         return username;
     }
