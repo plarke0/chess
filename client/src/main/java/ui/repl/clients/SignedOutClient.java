@@ -26,7 +26,7 @@ public class SignedOutClient implements Client{
             };
         } catch (IllegalArgumentException ex) {
             String msg = ex.getMessage();
-            return new ClientResponse("signedOutClient", msg);
+            return new ClientResponse(null, null, msg);
         }
     }
 
@@ -41,11 +41,11 @@ public class SignedOutClient implements Client{
                 quit - close the chess program
                 help - list possible commands
                 """;
-        return new ClientResponse("signedOutClient", msg);
+        return new ClientResponse(null, null, msg);
     }
 
     private ClientResponse quit() {
-        return new ClientResponse("quit", "Goodbye!");
+        return new ClientResponse("quit", null, "Goodbye!");
     }
 
     private ClientResponse login() {
