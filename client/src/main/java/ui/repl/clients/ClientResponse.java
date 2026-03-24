@@ -1,3 +1,3 @@
 package ui.repl.clients;
 
-public record ClientResponse(String newClient, String result) {}
+public record ClientResponse(String newClient, ClientData newClientData, String result) {}
