@@ -14,7 +14,7 @@ public class SignedOutClient implements Client{
         this.serverFacade = new ServerFacade(this.serverURL);
     }
 
-    public ClientResponse eval(String line) {
+    public ClientResponse eval(String line, ClientData currentClientData) {
         try {
             String[] args = line.toLowerCase().split(" ");
             String cmd = (args.length > 0) ? args[0] : null;
