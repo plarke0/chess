@@ -28,9 +28,16 @@ public class ChessBoard {
     }
 
     private static void drawColumnHeaders(Boolean isWhiteView) {
+        out.print(SET_BG_COLOR_LIGHT_GREY);
+        out.print(SET_TEXT_COLOR_BLACK);
+
+        out.print(EMPTY.repeat(SQUARE_SIZE_IN_CHARACTERS));
         for (int headerNumber = 0; headerNumber < BOARD_SIZE_IN_SQUARES; headerNumber++) {
             drawHeader(headerNumber, isWhiteView);
         }
+
+        out.print(EMPTY.repeat(SQUARE_SIZE_IN_CHARACTERS));
+        resetColors();
 
         out.println();
     }
@@ -50,8 +57,6 @@ public class ChessBoard {
         out.print(EMPTY.repeat(prefixLength));
         printHeaderText(headers[headerIndex]);
         out.print(EMPTY.repeat(suffixLength));
-
-        resetColors();
     }
 
     private static void drawRows() {
