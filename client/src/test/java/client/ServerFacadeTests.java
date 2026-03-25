@@ -3,6 +3,7 @@ package client;
 import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.*;
+import requests.CreateGameRequest;
 import requests.LoginRequest;
 import requests.RegisterRequest;
 import responses.RegisterResponse;
@@ -14,7 +15,6 @@ public class ServerFacadeTests {
 
     private static UserData existingUser;
     private static UserData newUser;
-    private static GameData existingGameData;
     private static String existingAuthToken;
 
     private static Server server;
@@ -104,12 +104,16 @@ public class ServerFacadeTests {
 
     @Test
     public void createGamePositive() {
-        Assertions.assertTrue(true);
+        Assertions.assertDoesNotThrow(() ->
+                serverFacade.createGame(new CreateGameRequest("Test Game"), existingAuthToken)
+        );
     }
 
     @Test
     public void createGameNegative() {
-        Assertions.assertTrue(true);
+        Assertions.assertThrows(ResponseException.class, () ->
+                serverFacade.createGame(new CreateGameRequest("Test Game"), "FAKEAUTH")
+        );
     }
 
     @Test
