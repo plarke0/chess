@@ -1,10 +1,19 @@
 package client;
 
+import model.GameData;
+import model.UserData;
 import org.junit.jupiter.api.*;
+import requests.LoginRequest;
+import requests.RegisterRequest;
+import responses.ResponseException;
 import server.Server;
 
 
 public class ServerFacadeTests {
+
+    private static UserData existingUser;
+    private static UserData newUser;
+    private static GameData existingGameData;
 
     private static Server server;
     private static ServerFacade serverFacade;
@@ -15,6 +24,15 @@ public class ServerFacadeTests {
         var port = server.run(0);
         serverFacade = new ServerFacade("http://localhost:" + port);
         System.out.println("Started test HTTP server on " + port);
+
+        existingUser = new UserData("user1", "12345", "user1@byu.edu");
+        newUser = new UserData("user2", "password", "user2@gmail.com");
+    }
+
+    @BeforeEach
+    public void reset() throws ResponseException {
+        serverFacade.clear();
+        serverFacade.registerUser(new RegisterRequest(existingUser.username(), existingUser.password(), existingUser.email()));
     }
 
     @AfterAll
