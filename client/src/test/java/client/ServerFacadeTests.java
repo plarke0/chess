@@ -5,6 +5,7 @@ import model.UserData;
 import org.junit.jupiter.api.*;
 import requests.LoginRequest;
 import requests.RegisterRequest;
+import responses.RegisterResponse;
 import responses.ResponseException;
 import server.Server;
 
@@ -14,6 +15,7 @@ public class ServerFacadeTests {
     private static UserData existingUser;
     private static UserData newUser;
     private static GameData existingGameData;
+    private static String existingAuthToken;
 
     private static Server server;
     private static ServerFacade serverFacade;
@@ -32,7 +34,12 @@ public class ServerFacadeTests {
     @BeforeEach
     public void reset() throws ResponseException {
         serverFacade.clear();
-        serverFacade.registerUser(new RegisterRequest(existingUser.username(), existingUser.password(), existingUser.email()));
+        RegisterResponse registerResponse = serverFacade.registerUser(
+                        new RegisterRequest(existingUser.username(),
+                        existingUser.password(),
+                        existingUser.email())
+        );
+        existingAuthToken = registerResponse.authToken();
     }
 
     @AfterAll
@@ -76,12 +83,9 @@ public class ServerFacadeTests {
 
     @Test
     public void logoutUserPositive() {
-        Assertions.assertTrue(true);
-    }
-
-    @Test
-    public void logoutUserNegative() {
-        Assertions.assertTrue(true);
+        Assertions.assertDoesNotThrow(() ->
+                serverFacade.logoutUser(existingAuthToken)
+        );
     }
 
     @Test
