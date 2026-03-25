@@ -90,8 +90,14 @@ public class SignedInClient implements Client{
 
     private ClientResponse joinGame(String[] params, ClientData currentClientData) throws ResponseException {
         validateCommand(params, 2);
-        int gameID = Integer.parseInt(params[0]);
+        int gameID;
+        try {
+            gameID = Integer.parseInt(params[0]);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("The given game ID of '" + params[0] + "' is not an integer");
+        }
         String playerColor = params[1].toUpperCase();
+
         JoinGameRequest joinGameRequest = new JoinGameRequest(gameID, playerColor);
         serverFacade.joinGame(joinGameRequest, currentClientData.getAuthToken());
         GameData gameData = getGameData(gameID);
@@ -101,7 +107,12 @@ public class SignedInClient implements Client{
 
     private ClientResponse observeGame(String[] params, ClientData currentClientData) {
         validateCommand(params, 1);
-        int gameID = Integer.parseInt(params[0]);
+        int gameID;
+        try {
+            gameID = Integer.parseInt(params[0]);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("The given game ID of '" + params[0] + "' is not an integer");
+        }
         GameData gameData = getGameData(gameID);
         ClientData newClientData = new ClientData(currentClientData.getUsername(), currentClientData.getAuthToken(), gameData);
         return new ClientResponse("gameClient", newClientData, "Now observing game " + gameID);
