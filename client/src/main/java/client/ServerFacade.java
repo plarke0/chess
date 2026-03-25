@@ -52,4 +52,9 @@ public class ServerFacade {
         headers.put("authorization", authToken);
         clientCommunicator.makeRequest("PUT", path, joinGameRequest, headers, null);
     }
+
+    public void clear() throws ResponseException {
+        String path = "/db";
+        clientCommunicator.makeRequest("DELETE", path, null, null, null);
+    }
 }
