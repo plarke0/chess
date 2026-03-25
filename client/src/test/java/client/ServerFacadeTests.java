@@ -1,9 +1,9 @@
 package client;
 
-import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.*;
 import requests.CreateGameRequest;
+import requests.JoinGameRequest;
 import requests.LoginRequest;
 import requests.RegisterRequest;
 import responses.RegisterResponse;
@@ -117,12 +117,25 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void joinGamePositive() {
-        Assertions.assertTrue(true);
+    public void joinGamePositive() throws ResponseException {
+        serverFacade.createGame(new CreateGameRequest("Test Game"), existingAuthToken);
+        Assertions.assertDoesNotThrow(() ->
+                serverFacade.joinGame(new JoinGameRequest(1, "WHITE"), existingAuthToken)
+        );
     }
 
     @Test
-    public void joinGameNegative() {
-        Assertions.assertTrue(true);
+    public void joinGameNegativeDoesNotExist() {
+        Assertions.assertThrows(ResponseException.class, () ->
+            serverFacade.joinGame(new JoinGameRequest(1, "WHITE"), existingAuthToken)
+        );
+    }
+
+    @Test
+    public void joinGameNegativeInvalidAuth() throws ResponseException {
+        serverFacade.createGame(new CreateGameRequest("Test Game"), existingAuthToken);
+        Assertions.assertThrows(ResponseException.class, () ->
+            serverFacade.joinGame(new JoinGameRequest(1, "WHITE"), "FAKEAUTH")
+        );
     }
 }
