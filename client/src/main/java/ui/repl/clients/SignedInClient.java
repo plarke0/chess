@@ -2,6 +2,8 @@ package ui.repl.clients;
 
 import client.ClientCommunicator;
 import client.ServerFacade;
+import requests.CreateGameRequest;
+import responses.CreateGameResponse;
 import responses.ResponseException;
 
 import java.util.Arrays;
@@ -24,6 +26,7 @@ public class SignedInClient implements Client{
             return switch (cmd) {
                 case "help" -> help();
                 case "logout" -> logout(currentClientData);
+                case "create" -> createGame(params, currentClientData);
                 case null, default -> unrecognisedCommand(cmd);
             };
         } catch (IllegalArgumentException | ResponseException ex) {
@@ -54,8 +57,11 @@ public class SignedInClient implements Client{
         return new ClientResponse("signedOutClient", newClientData, "Successfully logged out");
     }
 
-    private ClientResponse createGame() {
-        return null;
+    private ClientResponse createGame(String[] params, ClientData currentClientData) throws ResponseException {
+        validateCommand(params, 1);
+        CreateGameRequest createGameRequest = new CreateGameRequest(params[0]);
+        CreateGameResponse createGameResponse = serverFacade.createGame(createGameRequest, currentClientData.getAuthToken());
+        return new ClientResponse(null, null, "Created new game named '" + params[0] + "'");
     }
 
     private ClientResponse listGames() {
