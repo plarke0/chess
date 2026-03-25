@@ -62,12 +62,16 @@ public class ServerFacadeTests {
 
     @Test
     public void loginUserPositive() {
-        Assertions.assertTrue(true);
+        Assertions.assertThrows(ResponseException.class, () ->
+                serverFacade.loginUser(new LoginRequest(newUser.username(), newUser.password()))
+        );
     }
 
     @Test
     public void loginUserNegative() {
-        Assertions.assertTrue(true);
+        Assertions.assertDoesNotThrow(() ->
+                serverFacade.loginUser(new LoginRequest(existingUser.username(), existingUser.password()))
+        );
     }
 
     @Test
