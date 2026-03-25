@@ -20,6 +20,7 @@ public class ChessBoard {
             boardArray[row-1][col-1] = board.getPiece(position);
         }
 
+        out.println();
         drawColumnHeaders(isWhiteView);
         drawRows(isWhiteView, boardArray);
         drawColumnHeaders(isWhiteView);

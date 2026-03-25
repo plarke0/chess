@@ -46,7 +46,10 @@ public class ServerFacade {
         return clientCommunicator.makeRequest("POST", path, createGameRequest, headers, CreateGameResponse.class);
     }
 
-    public void joinGame(JoinGameRequest joinGameRequest, String authToken) {
-        ;
+    public void joinGame(JoinGameRequest joinGameRequest, String authToken) throws ResponseException {
+        String path = "/game";
+        Map<String, String> headers = new HashMap<>();
+        headers.put("authorization", authToken);
+        clientCommunicator.makeRequest("PUT", path, joinGameRequest, headers, null);
     }
 }

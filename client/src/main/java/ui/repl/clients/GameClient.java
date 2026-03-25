@@ -1,6 +1,8 @@
 package ui.repl.clients;
 
 import client.ServerFacade;
+import model.GameData;
+import ui.ChessBoard;
 
 public class GameClient implements Client{
 
@@ -26,5 +28,11 @@ public class GameClient implements Client{
 
     private ClientResponse exit() {
         return null;
+    }
+    public void drawBoard(ClientData clientData) {
+        String user = clientData.getUsername();
+        GameData activeGame = clientData.getActiveGame();
+        Boolean isWhiteView = !user.equals(activeGame.blackUsername());
+        ChessBoard.drawBoard(activeGame.game().getBoard(), isWhiteView);
     }
 }

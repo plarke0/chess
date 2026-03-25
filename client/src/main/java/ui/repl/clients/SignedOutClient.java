@@ -59,7 +59,7 @@ public class SignedOutClient implements Client{
         validateCommand(params, 2);
         LoginRequest loginRequest = new LoginRequest(params[0], params[1]);
         LoginResponse loginResponse = serverFacade.loginUser(loginRequest);
-        ClientData newClientData = new ClientData(loginResponse.username(), loginResponse.authToken());
+        ClientData newClientData = new ClientData(loginResponse.username(), loginResponse.authToken(), null);
         return new ClientResponse("signedInClient", newClientData, "Logged in as " + loginResponse.username());
     }
 
@@ -67,7 +67,7 @@ public class SignedOutClient implements Client{
         validateCommand(params, 3);
         RegisterRequest registerRequest = new RegisterRequest(params[0], params[1], params[2]);
         RegisterResponse registerResponse = serverFacade.registerUser(registerRequest);
-        ClientData newClientData = new ClientData(registerResponse.username(), registerResponse.authToken());
+        ClientData newClientData = new ClientData(registerResponse.username(), registerResponse.authToken(), null);
         return new ClientResponse("signedInClient", newClientData, "Logged in as " + registerResponse.username());
     }
 

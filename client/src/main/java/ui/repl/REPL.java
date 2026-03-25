@@ -60,6 +60,9 @@ public class REPL {
 
     public void printPrompt() {
         System.out.print(RESET_TEXT_COLOR + RESET_BG_COLOR);
+        if (currentClient == gameClient) {
+            gameClient.drawBoard(clientData);
+        }
         System.out.print("\n[" + currentClient.getPromptTitle() + "] >>> " + SET_TEXT_COLOR_GREEN);
     }
 }

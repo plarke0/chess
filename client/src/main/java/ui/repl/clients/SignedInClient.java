@@ -1,8 +1,11 @@
 package ui.repl.clients;
 
+import chess.ChessBoard;
+import chess.ChessGame;
 import client.ServerFacade;
 import model.GameData;
 import requests.CreateGameRequest;
+import requests.JoinGameRequest;
 import responses.CreateGameResponse;
 import responses.ListGamesResponse;
 import responses.ResponseException;
@@ -29,6 +32,7 @@ public class SignedInClient implements Client{
                 case "logout" -> logout(currentClientData);
                 case "create" -> createGame(params, currentClientData);
                 case "list" -> listGames(currentClientData);
+                case "join" -> joinGame(params, currentClientData);
                 case null, default -> unrecognisedCommand(cmd);
             };
         } catch (IllegalArgumentException | ResponseException ex) {
@@ -55,7 +59,7 @@ public class SignedInClient implements Client{
 
     private ClientResponse logout(ClientData currentClientData) throws ResponseException {
         serverFacade.logoutUser(currentClientData.getAuthToken());
-        ClientData newClientData = new ClientData(null, null);
+        ClientData newClientData = new ClientData(null, null, null);
         return new ClientResponse("signedOutClient", newClientData, "Successfully logged out");
     }
 
@@ -68,7 +72,8 @@ public class SignedInClient implements Client{
 
     private ClientResponse listGames(ClientData currentClientData) throws ResponseException {
         ListGamesResponse listGamesResponse = serverFacade.listGames(currentClientData.getAuthToken());
-        ClientData newClientData = new ClientData(currentClientData.getUsername(), currentClientData.getAuthToken());
+        ClientData newClientData = new ClientData(currentClientData.getUsername(), currentClientData.getAuthToken(), null);
+
         StringBuilder result = new StringBuilder("The following games are active:");
         for (GameData gameData : listGamesResponse.games()) {
             int gameID = gameData.gameID();
@@ -81,8 +86,25 @@ public class SignedInClient implements Client{
         return new ClientResponse(null, newClientData, result.toString());
     }
 
-    private ClientResponse playGame() {
-        return null;
+    private ClientResponse joinGame(String[] params, ClientData currentClientData) throws ResponseException {
+        validateCommand(params, 2);
+        int gameID = Integer.parseInt(params[0]);
+        String playerColor = params[1].toUpperCase();
+        JoinGameRequest joinGameRequest = new JoinGameRequest(gameID, playerColor);
+        serverFacade.joinGame(joinGameRequest, currentClientData.getAuthToken());
+        ChessBoard mockBoard = new ChessBoard();
+        mockBoard.resetBoard();
+        ChessGame mockGame = new ChessGame();
+        mockGame.setBoard(mockBoard);
+        GameData mockGameData = new GameData(
+                gameID,
+                null,
+                null,
+                "mock",
+                mockGame
+        );
+        ClientData newClientData = new ClientData(currentClientData.getUsername(), currentClientData.getAuthToken(), mockGameData);
+        return new ClientResponse("gameClient", newClientData, "Successfully joined game " + gameID + " as player " + params[1]);
     }
 
     private ClientResponse observeGame() {
