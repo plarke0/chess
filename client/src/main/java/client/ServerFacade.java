@@ -12,8 +12,9 @@ public class ServerFacade {
         clientCommunicator = new ClientCommunicator(serverUrl);
     }
 
-    public RegisterResponse registerUser(RegisterRequest registerRequest) {
-        return null;
+    public RegisterResponse registerUser(RegisterRequest registerRequest) throws ResponseException{
+        String path = "/user";
+        return clientCommunicator.makeRequest("POST", path, registerRequest, RegisterResponse.class);
     }
 
     public LoginResponse loginUser(LoginRequest loginRequest) throws ResponseException{
