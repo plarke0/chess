@@ -3,6 +3,7 @@ package client;
 import com.google.gson.Gson;
 import responses.ResponseException;
 
+import java.net.ConnectException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -23,6 +24,8 @@ public class ClientCommunicator {
             return handleResponse(response, responseClass);
         } catch (ResponseException ex) {
             throw ex;
+        } catch (ConnectException ex) {
+            throw new ResponseException(500, "Failed to connect to the server.");
         } catch (Exception ex) {
             throw new ResponseException(500, ex.getMessage());
         }
@@ -51,7 +54,7 @@ public class ClientCommunicator {
         if (!isSuccessful(status)) {
             var body = response.body();
             if (body != null) {
-                throw ResponseException.fromJson(body);
+                throw ResponseException.fromJson(body, response.statusCode());
             }
 
             throw new ResponseException(status, "other failure: " + status);
