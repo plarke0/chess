@@ -92,18 +92,8 @@ public class SignedInClient implements Client{
         String playerColor = params[1].toUpperCase();
         JoinGameRequest joinGameRequest = new JoinGameRequest(gameID, playerColor);
         serverFacade.joinGame(joinGameRequest, currentClientData.getAuthToken());
-        ChessBoard mockBoard = new ChessBoard();
-        mockBoard.resetBoard();
-        ChessGame mockGame = new ChessGame();
-        mockGame.setBoard(mockBoard);
-        GameData mockGameData = new GameData(
-                gameID,
-                null,
-                null,
-                "mock",
-                mockGame
-        );
-        ClientData newClientData = new ClientData(currentClientData.getUsername(), currentClientData.getAuthToken(), mockGameData);
+        GameData gameData = getGameData(gameID);
+        ClientData newClientData = new ClientData(currentClientData.getUsername(), currentClientData.getAuthToken(), gameData);
         return new ClientResponse("gameClient", newClientData, "Successfully joined game " + gameID + " as player " + params[1]);
     }
 
@@ -123,5 +113,19 @@ public class SignedInClient implements Client{
         if (params.length < argCount) {
             throw new IllegalArgumentException("Only " + params.length + " arguments were given when " + argCount + " was/were needed.");
         }
+    }
+
+    private GameData getGameData(int gameID) {
+        ChessBoard mockBoard = new ChessBoard();
+        mockBoard.resetBoard();
+        ChessGame mockGame = new ChessGame();
+        mockGame.setBoard(mockBoard);
+        return new GameData(
+                gameID,
+                null,
+                null,
+                "mock",
+                mockGame
+        );
     }
 }
