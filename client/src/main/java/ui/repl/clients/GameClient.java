@@ -23,6 +23,7 @@ public class GameClient implements Client{
             String[] params = Arrays.copyOfRange(args, 1, args.length);
             return switch (cmd) {
                 case "help" -> help();
+                case "exit" -> exit(currentClientData);
                 case null, default -> unrecognisedCommand(cmd);
             };
         } catch (IllegalArgumentException ex) {
@@ -44,8 +45,9 @@ public class GameClient implements Client{
         return new ClientResponse(null, null, msg);
     }
 
-    private ClientResponse exit() {
-        return null;
+    private ClientResponse exit(ClientData currentClientData) {
+        ClientData newClientData = new ClientData(currentClientData.getUsername(), currentClientData.getAuthToken(), null);
+        return new ClientResponse("signedInClient", newClientData, "Left '" + currentClientData.getActiveGame().gameName() + "'");
     }
 
     private ClientResponse unrecognisedCommand(String command) throws IllegalArgumentException {
