@@ -6,6 +6,8 @@ import ui.ChessBoard;
 
 import java.util.Arrays;
 
+import static ui.EscapeSequences.SET_TEXT_COLOR_RED;
+
 public class GameClient implements Client{
 
     private final String serverURL;
@@ -28,7 +30,7 @@ public class GameClient implements Client{
             };
         } catch (IllegalArgumentException ex) {
             String msg = ex.getMessage();
-            return new ClientResponse(null, null, msg);
+            return new ClientResponse(null, null, SET_TEXT_COLOR_RED + msg);
         }
     }
 
@@ -38,10 +40,9 @@ public class GameClient implements Client{
 
     private ClientResponse help() {
         String msg = """
-                More to come in Phase 6
                 exit - leave the game
                 help - list possible commands
-                """;
+                More to come in Phase 6""";
         return new ClientResponse(null, null, msg);
     }
 
@@ -52,15 +53,20 @@ public class GameClient implements Client{
 
     private ClientResponse unrecognisedCommand(String command) throws IllegalArgumentException {
         if (command == null || command.isEmpty()) {
-            throw new IllegalArgumentException("No command was provided. Type 'help' for a list of available commands.");
+            throw new IllegalArgumentException("No command was provided. Type 'help' for a list of available commands");
         } else {
-            throw new IllegalArgumentException("'" + command + "' is not a valid command. Type 'help' for a list of available commands.");
+            throw new IllegalArgumentException("'" + command + "' is not a valid command. Type 'help' for a list of available commands");
         }
     }
 
     private void validateCommand(String[] params, int argCount) throws IllegalArgumentException {
         if (params.length < argCount) {
-            throw new IllegalArgumentException("Only " + params.length + " arguments were given when " + argCount + " was/were needed.");
+            throw new IllegalArgumentException(
+                    "Only " + params.length
+                            + (((params.length == 1)) ? " argument was given when " : " arguments were given when ")
+                            + argCount + " "
+                            + ((argCount == 1) ? "was" : "were") + " needed"
+            );
         }
     }
 

@@ -49,10 +49,10 @@ public class REPL {
                 }
 
                 result = response.result();
-                System.out.print(result);
+                System.out.print(SET_TEXT_COLOR_BLUE + result);
             } catch (Throwable throwable) {
                 var msg = throwable.toString();
-                System.out.print(msg);
+                System.out.print(SET_TEXT_COLOR_RED + msg);
             }
         }
         System.out.println();
