@@ -48,12 +48,16 @@ public class ServerFacadeTests {
 
     @Test
     public void registerUserPositive() {
-        Assertions.assertTrue(true);
+        Assertions.assertDoesNotThrow(() ->
+                serverFacade.registerUser(new RegisterRequest(newUser.username(), newUser.password(), newUser.email()))
+        );
     }
 
     @Test
     public void registerUserNegative() {
-        Assertions.assertTrue(true);
+        Assertions.assertThrows(ResponseException.class, () ->
+                serverFacade.registerUser(new RegisterRequest(existingUser.username(), existingUser.password(), existingUser.email()))
+        );
     }
 
     @Test
