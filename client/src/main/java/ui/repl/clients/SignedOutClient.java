@@ -8,6 +8,7 @@ import responses.RegisterResponse;
 import responses.ResponseException;
 
 import static ui.EscapeSequences.SET_TEXT_COLOR_RED;
+import static ui.repl.clients.ClientMethods.*;
 
 import java.util.Arrays;
 
@@ -70,24 +71,5 @@ public class SignedOutClient implements Client{
         RegisterResponse registerResponse = serverFacade.registerUser(registerRequest);
         ClientData newClientData = new ClientData(registerResponse.username(), registerResponse.authToken(), null);
         return new ClientResponse("signedInClient", newClientData, "Logged in as " + registerResponse.username());
-    }
-
-    private ClientResponse unrecognisedCommand(String command) throws IllegalArgumentException {
-        if (command == null || command.isEmpty()) {
-            throw new IllegalArgumentException("No command was provided. Type 'help' for a list of available commands");
-        } else {
-            throw new IllegalArgumentException("'" + command + "' is not a valid command. Type 'help' for a list of available commands");
-        }
-    }
-
-    private void validateCommand(String[] params, int argCount) throws IllegalArgumentException {
-        if (params.length < argCount) {
-            throw new IllegalArgumentException(
-                    "Only " + params.length
-                            + (((params.length == 1)) ? " argument was given when " : " arguments were given when ")
-                            + argCount + " "
-                            + ((argCount == 1) ? "was" : "were") + " needed"
-            );
-        }
     }
 }
