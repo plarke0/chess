@@ -101,7 +101,7 @@ public class SignedInClient implements Client{
 
         JoinGameRequest joinGameRequest = new JoinGameRequest(gameID, playerColor);
         serverFacade.joinGame(joinGameRequest, currentClientData.getAuthToken());
-        GameData gameData = getGameData(gameID);
+        GameData gameData = getGameData(gameID, params[1], currentClientData);
         ClientData newClientData = new ClientData(currentClientData.getUsername(), currentClientData.getAuthToken(), gameData);
         return new ClientResponse("gameClient", newClientData, "Successfully joined game " + gameID + " as player " + params[1]);
     }
@@ -114,20 +114,21 @@ public class SignedInClient implements Client{
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("The given game ID of '" + params[0] + "' is not an integer");
         }
-        GameData gameData = getGameData(gameID);
+        GameData gameData = getGameData(gameID, null, currentClientData);
         ClientData newClientData = new ClientData(currentClientData.getUsername(), currentClientData.getAuthToken(), gameData);
         return new ClientResponse("gameClient", newClientData, "Now observing game " + gameID);
     }
 
-    private GameData getGameData(int gameID) {
+    private GameData getGameData(int gameID, String color, ClientData currentClientData) {
         ChessBoard mockBoard = new ChessBoard();
         mockBoard.resetBoard();
         ChessGame mockGame = new ChessGame();
+        color = color.toUpperCase();
         mockGame.setBoard(mockBoard);
         return new GameData(
                 gameID,
-                null,
-                null,
+                (color.equals("WHITE")) ? currentClientData.getUsername() : null,
+                (color.equals("BLACK")) ? currentClientData.getUsername() : null,
                 "mock",
                 mockGame
         );
