@@ -25,7 +25,7 @@ public class ServerFacadeTests {
 
     @Test
     public void clearPositive() {
-        Assertions.assertTrue(true);
+        Assertions.assertDoesNotThrow(() -> serverFacade.clear());
     }
 
     @Test
