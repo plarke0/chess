@@ -90,12 +90,16 @@ public class ServerFacadeTests {
 
     @Test
     public void listGamesPositive() {
-        Assertions.assertTrue(true);
+        Assertions.assertDoesNotThrow(() ->
+            serverFacade.listGames(existingAuthToken)
+        );
     }
 
     @Test
     public void listGamesNegative() {
-        Assertions.assertTrue(true);
+        Assertions.assertThrows(ResponseException.class, () ->
+                serverFacade.listGames("FAKEAUTH")
+        );
     }
 
     @Test
