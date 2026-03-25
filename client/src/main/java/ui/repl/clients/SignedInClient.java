@@ -33,6 +33,7 @@ public class SignedInClient implements Client{
                 case "create" -> createGame(params, currentClientData);
                 case "list" -> listGames(currentClientData);
                 case "join" -> joinGame(params, currentClientData);
+                case "observe" -> observeGame(params, currentClientData);
                 case null, default -> unrecognisedCommand(cmd);
             };
         } catch (IllegalArgumentException | ResponseException ex) {
@@ -97,8 +98,12 @@ public class SignedInClient implements Client{
         return new ClientResponse("gameClient", newClientData, "Successfully joined game " + gameID + " as player " + params[1]);
     }
 
-    private ClientResponse observeGame() {
-        return null;
+    private ClientResponse observeGame(String[] params, ClientData currentClientData) {
+        validateCommand(params, 1);
+        int gameID = Integer.parseInt(params[0]);
+        GameData gameData = getGameData(gameID);
+        ClientData newClientData = new ClientData(currentClientData.getUsername(), currentClientData.getAuthToken(), gameData);
+        return new ClientResponse("gameClient", newClientData, "Now observing game " + gameID);
     }
 
     private ClientResponse unrecognisedCommand(String command) throws IllegalArgumentException {
