@@ -14,12 +14,12 @@ public class ServerFacade {
 
     public RegisterResponse registerUser(RegisterRequest registerRequest) throws ResponseException{
         String path = "/user";
-        return clientCommunicator.makeRequest("POST", path, registerRequest, RegisterResponse.class);
+        return clientCommunicator.makeRequest("POST", path, registerRequest, null, RegisterResponse.class);
     }
 
     public LoginResponse loginUser(LoginRequest loginRequest) throws ResponseException{
         String path = "/session";
-        return clientCommunicator.makeRequest("POST", path, loginRequest, LoginResponse.class);
+        return clientCommunicator.makeRequest("POST", path, loginRequest, null, LoginResponse.class);
     }
 
     public void logoutUser(String authToken) {

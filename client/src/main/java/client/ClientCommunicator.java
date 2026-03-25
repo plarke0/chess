@@ -8,6 +8,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Map;
 
 public class ClientCommunicator {
     private final HttpClient client = HttpClient.newHttpClient();
@@ -17,9 +18,10 @@ public class ClientCommunicator {
         this.serverURL = serverURL;
     }
 
-    public <T> T makeRequest(String method, String path, Object body, Class<T> responseClass) throws ResponseException {
+    public <T> T makeRequest(String method, String path, Object body, Map<String, String> headers, Class<T> responseClass)
+            throws ResponseException {
         try {
-            var request = buildRequest(method, path, body);
+            var request = buildRequest(method, path, body, headers);
             var response = client.send(request, HttpResponse.BodyHandlers.ofString());
             return handleResponse(response, responseClass);
         } catch (ResponseException ex) {
@@ -31,12 +33,17 @@ public class ClientCommunicator {
         }
     }
 
-    private HttpRequest buildRequest(String method, String path, Object body) {
+    private HttpRequest buildRequest(String method, String path, Object body, Map<String, String> headers) {
         var request = HttpRequest.newBuilder()
                 .uri(URI.create(serverURL + path))
                 .method(method, makeRequestBody(body));
         if (body != null) {
             request.setHeader("Content-Type", "application/json");
+        }
+        if (headers != null) {
+            for (Map.Entry<String, String> header : headers.entrySet()) {
+                request.setHeader(header.getKey(), header.getValue());
+            }
         }
         return request.build();
     }
