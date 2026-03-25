@@ -10,9 +10,13 @@ import java.net.http.HttpResponse;
 
 public class ClientCommunicator {
     private final HttpClient client = HttpClient.newHttpClient();
-    private String serverURL;
+    private final String serverURL;
 
-    private <T> T makeRequest(String method, String path, Object body, Class<T> responseClass) throws ResponseException {
+    public ClientCommunicator(String serverURL) {
+        this.serverURL = serverURL;
+    }
+
+    public <T> T makeRequest(String method, String path, Object body, Class<T> responseClass) throws ResponseException {
         try {
             var request = buildRequest(method, path, body);
             var response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -24,7 +28,7 @@ public class ClientCommunicator {
         }
     }
 
-    public HttpRequest buildRequest(String method, String path, Object body) {
+    private HttpRequest buildRequest(String method, String path, Object body) {
         var request = HttpRequest.newBuilder()
                 .uri(URI.create(serverURL + path))
                 .method(method, makeRequestBody(body));
@@ -42,7 +46,7 @@ public class ClientCommunicator {
         }
     }
 
-    public <T> T handleResponse(HttpResponse<String> response, Class<T> responseClass) throws ResponseException {
+    private <T> T handleResponse(HttpResponse<String> response, Class<T> responseClass) throws ResponseException {
         var status = response.statusCode();
         if (!isSuccessful(status)) {
             var body = response.body();
@@ -62,9 +66,5 @@ public class ClientCommunicator {
 
     private Boolean isSuccessful(int status) {
         return status / 100 == 2;
-    }
-
-    public void setServerURL(String serverURL) {
-        this.serverURL = serverURL;
     }
 }
