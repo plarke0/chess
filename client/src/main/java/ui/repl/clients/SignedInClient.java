@@ -1,5 +1,6 @@
 package ui.repl.clients;
 
+import client.ClientCommunicator;
 import client.ServerFacade;
 import responses.ResponseException;
 
@@ -22,9 +23,10 @@ public class SignedInClient implements Client{
             String[] params = Arrays.copyOfRange(args, 1, args.length);
             return switch (cmd) {
                 case "help" -> help();
+                case "logout" -> logout(currentClientData);
                 case null, default -> unrecognisedCommand(cmd);
             };
-        } catch (IllegalArgumentException ex) {
+        } catch (IllegalArgumentException | ResponseException ex) {
             String msg = ex.getMessage();
             return new ClientResponse(null, null, msg);
         }
@@ -46,8 +48,10 @@ public class SignedInClient implements Client{
         return new ClientResponse(null, null, msg);
     }
 
-    private ClientResponse logout() {
-        return null;
+    private ClientResponse logout(ClientData currentClientData) throws ResponseException {
+        serverFacade.logoutUser(currentClientData.getAuthToken());
+        ClientData newClientData = new ClientData(null, null, currentClientData.getActiveGames());
+        return new ClientResponse("signedOutClient", newClientData, "Successfully logged out");
     }
 
     private ClientResponse createGame() {

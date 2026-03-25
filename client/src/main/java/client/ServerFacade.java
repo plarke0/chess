@@ -3,6 +3,9 @@ package client;
 import requests.*;
 import responses.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class ServerFacade {
     private final String serverUrl;
     ClientCommunicator clientCommunicator;
@@ -22,8 +25,11 @@ public class ServerFacade {
         return clientCommunicator.makeRequest("POST", path, loginRequest, null, LoginResponse.class);
     }
 
-    public void logoutUser(String authToken) {
-        ;
+    public void logoutUser(String authToken) throws ResponseException {
+        String path = "/session";
+        Map<String, String> headers = new HashMap<>();
+        headers.put("authorization", authToken);
+        clientCommunicator.makeRequest("DELETE", path, null, headers, null);
     }
 
     public ListGamesResponse listGames(String authToken) {
