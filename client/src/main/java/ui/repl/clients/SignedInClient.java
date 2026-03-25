@@ -1,6 +1,5 @@
 package ui.repl.clients;
 
-import client.ClientCommunicator;
 import client.ServerFacade;
 import model.GameData;
 import requests.CreateGameRequest;
@@ -56,7 +55,7 @@ public class SignedInClient implements Client{
 
     private ClientResponse logout(ClientData currentClientData) throws ResponseException {
         serverFacade.logoutUser(currentClientData.getAuthToken());
-        ClientData newClientData = new ClientData(null, null, currentClientData.getActiveGames());
+        ClientData newClientData = new ClientData(null, null);
         return new ClientResponse("signedOutClient", newClientData, "Successfully logged out");
     }
 
@@ -69,7 +68,7 @@ public class SignedInClient implements Client{
 
     private ClientResponse listGames(ClientData currentClientData) throws ResponseException {
         ListGamesResponse listGamesResponse = serverFacade.listGames(currentClientData.getAuthToken());
-        ClientData newClientData = new ClientData(currentClientData.getUsername(), currentClientData.getAuthToken(), listGamesResponse.games());
+        ClientData newClientData = new ClientData(currentClientData.getUsername(), currentClientData.getAuthToken());
         StringBuilder result = new StringBuilder("The following games are active:");
         for (GameData gameData : listGamesResponse.games()) {
             int gameID = gameData.gameID();

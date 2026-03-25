@@ -7,14 +7,12 @@ import java.util.Collection;
 public class ClientData {
     private String username;
     private String authToken;
-    private Collection<GameData> activeGames;
 
     public ClientData() {}
 
-    public ClientData(String username, String authToken, Collection<GameData> activeGames) {
+    public ClientData(String username, String authToken) {
         this.username = username;
         this.authToken = authToken;
-        this.activeGames = activeGames;
     }
 
     public String getUsername() {
@@ -31,13 +29,5 @@ public class ClientData {
 
     public void setAuthToken(String authToken) {
         this.authToken = authToken;
-    }
-
-    public Collection<GameData> getActiveGames() {
-        return activeGames;
-    }
-
-    public void setActiveGames(Collection<GameData> activeGames) {
-        this.activeGames = activeGames;
     }
 }
