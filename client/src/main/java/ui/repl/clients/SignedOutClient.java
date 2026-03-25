@@ -1,6 +1,9 @@
 package ui.repl.clients;
 
 import client.ServerFacade;
+import requests.LoginRequest;
+import responses.LoginResponse;
+import responses.ResponseException;
 
 import java.util.Arrays;
 
@@ -22,9 +25,10 @@ public class SignedOutClient implements Client{
             return switch (cmd) {
                 case "help" -> help();
                 case "quit" -> quit();
+                case "login" -> login(params, currentClientData);
                 case null, default -> unrecognisedCommand(cmd);
             };
-        } catch (IllegalArgumentException ex) {
+        } catch (IllegalArgumentException | ResponseException ex) {
             String msg = ex.getMessage();
             return new ClientResponse(null, null, msg);
         }
@@ -48,8 +52,12 @@ public class SignedOutClient implements Client{
         return new ClientResponse("quit", null, "Goodbye!");
     }
 
-    private ClientResponse login() {
-        return null;
+    private ClientResponse login(String[] params, ClientData currentClientData) throws ResponseException {
+        validateCommand(params, 2);
+        LoginRequest loginRequest = new LoginRequest(params[0], params[1]);
+        LoginResponse loginResponse = serverFacade.loginUser(loginRequest);
+        ClientData newClientData = new ClientData(loginResponse.username(), loginResponse.authToken(), currentClientData.getActiveGames());
+        return new ClientResponse("signedInClient", newClientData, "Logged in as " + loginResponse.username());
     }
 
     private ClientResponse register() {
@@ -64,7 +72,9 @@ public class SignedOutClient implements Client{
         }
     }
 
-    private void validateCommand(String line, int argCount) throws IllegalArgumentException {
-
+    private void validateCommand(String[] params, int argCount) throws IllegalArgumentException {
+        if (params.length < argCount) {
+            throw new IllegalArgumentException("Only " + params.length + " arguments were given when " + argCount + " was/were needed.");
+        }
     }
 }

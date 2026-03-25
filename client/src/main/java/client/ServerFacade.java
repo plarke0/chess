@@ -5,17 +5,20 @@ import responses.*;
 
 public class ServerFacade {
     private final String serverUrl;
+    ClientCommunicator clientCommunicator;
 
     public ServerFacade(String url) {
         serverUrl = url;
+        clientCommunicator = new ClientCommunicator(serverUrl);
     }
 
     public RegisterResponse registerUser(RegisterRequest registerRequest) {
         return null;
     }
 
-    public LoginResponse loginUser(LoginRequest loginRequest) {
-        return null;
+    public LoginResponse loginUser(LoginRequest loginRequest) throws ResponseException{
+        String path = "/session";
+        return clientCommunicator.makeRequest("POST", path, loginRequest, LoginResponse.class);
     }
 
     public void logoutUser(String authToken) {
