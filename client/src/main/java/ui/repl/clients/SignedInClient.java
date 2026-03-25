@@ -2,8 +2,10 @@ package ui.repl.clients;
 
 import client.ClientCommunicator;
 import client.ServerFacade;
+import model.GameData;
 import requests.CreateGameRequest;
 import responses.CreateGameResponse;
+import responses.ListGamesResponse;
 import responses.ResponseException;
 
 import java.util.Arrays;
@@ -27,6 +29,7 @@ public class SignedInClient implements Client{
                 case "help" -> help();
                 case "logout" -> logout(currentClientData);
                 case "create" -> createGame(params, currentClientData);
+                case "list" -> listGames(currentClientData);
                 case null, default -> unrecognisedCommand(cmd);
             };
         } catch (IllegalArgumentException | ResponseException ex) {
@@ -64,8 +67,19 @@ public class SignedInClient implements Client{
         return new ClientResponse(null, null, "Created new game named '" + params[0] + "'");
     }
 
-    private ClientResponse listGames() {
-        return null;
+    private ClientResponse listGames(ClientData currentClientData) throws ResponseException {
+        ListGamesResponse listGamesResponse = serverFacade.listGames(currentClientData.getAuthToken());
+        ClientData newClientData = new ClientData(currentClientData.getUsername(), currentClientData.getAuthToken(), listGamesResponse.games());
+        StringBuilder result = new StringBuilder("The following games are active:");
+        for (GameData gameData : listGamesResponse.games()) {
+            int gameID = gameData.gameID();
+            String gameName = gameData.gameName();
+            String whiteUser = gameData.whiteUsername();
+            String blackUser = gameData.blackUsername();
+            result.append("\n").append(gameID).append(". Game Name: ").append(gameName);
+            result.append(" | White: ").append(whiteUser).append(" | Black: ").append(blackUser);
+        }
+        return new ClientResponse(null, newClientData, result.toString());
     }
 
     private ClientResponse playGame() {

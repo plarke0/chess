@@ -32,8 +32,11 @@ public class ServerFacade {
         clientCommunicator.makeRequest("DELETE", path, null, headers, null);
     }
 
-    public ListGamesResponse listGames(String authToken) {
-        return null;
+    public ListGamesResponse listGames(String authToken) throws ResponseException {
+        String path = "/game";
+        Map<String, String> headers = new HashMap<>();
+        headers.put("authorization", authToken);
+        return clientCommunicator.makeRequest("GET", path, null, headers, ListGamesResponse.class);
     }
 
     public CreateGameResponse createGame(CreateGameRequest createGameRequest, String authToken) throws ResponseException {
