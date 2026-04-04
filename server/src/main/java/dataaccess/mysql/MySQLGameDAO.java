@@ -49,7 +49,7 @@ public class MySQLGameDAO implements GameDAO {
                 return new GameData(gameID, whiteUsername, blackUsername, gameName, game);
             }
         } catch (SQLException e) {
-            throw new DataAccessException(e.getMessage());
+            throw new DataAccessException("Could not retrieve game with the given ID");
         }
     }
 
