@@ -12,12 +12,14 @@ import responses.*;
 import service.ClearService;
 import service.GameService;
 import service.UserService;
+import websocket.WebSocketHandler;
 
 public class Server {
 
     private final UserService userService = new UserService();
     private final GameService gameService = new GameService();
     private final ClearService clearService = new ClearService();
+    private final WebSocketHandler webSocketHandler = new WebSocketHandler();
     private final Javalin javalin;
 
     public Server() {
@@ -37,6 +39,12 @@ public class Server {
 
         javalin.exception(ResponseException.class, this::responseExceptionHandler);
         javalin.exception(DataAccessException.class, this::dataAccessExceptionHandler);
+
+        javalin.ws("/ws", ws -> {
+                    ws.onConnect(webSocketHandler);
+                    ws.onMessage(webSocketHandler);
+                    ws.onClose(webSocketHandler);
+                });
     }
 
     public int run(int desiredPort) {
