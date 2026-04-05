@@ -10,11 +10,11 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Map;
 
-public class ClientCommunicator {
+public class HttpCommunicator {
     private final HttpClient client = HttpClient.newHttpClient();
     private final String serverURL;
 
-    public ClientCommunicator(String serverURL) {
+    public HttpCommunicator(String serverURL) {
         this.serverURL = serverURL;
     }
 
