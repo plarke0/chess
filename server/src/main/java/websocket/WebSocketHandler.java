@@ -13,6 +13,7 @@ import responses.ResponseException;
 import websocket.commands.UserGameCommand;
 import org.eclipse.jetty.websocket.api.Session;
 import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
 
 import java.io.IOException;
 
@@ -71,7 +72,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
     }
 
-    private ChessGame getGame(String authToken, int gameID) throws ResponseException, DataAccessException {
+    private GameData getGameData(String authToken, int gameID) throws ResponseException, DataAccessException {
         checkAuth(authToken);
 
         GameData gameData = gameDAO.getGame(gameID);
@@ -79,15 +80,46 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             throw new ResponseException(400, "bad request");
         }
 
-        return gameData.game();
+        return gameData;
+    }
+
+    private String getUsername(String authToken) throws ResponseException, DataAccessException {
+        AuthData authData = authDAO.getAuth(authToken);
+        if (authData == null) {
+            throw new ResponseException(400, "bad request");
+        }
+
+        return authData.username();
+    }
+
+    @NotNull
+    private static String getConnectMessage(String username, GameData gameData) {
+        ChessGame.TeamColor color = null;
+        if (username.equals(gameData.whiteUsername())) {
+            color = ChessGame.TeamColor.WHITE;
+        } else if (username.equals(gameData.blackUsername())) {
+            color = ChessGame.TeamColor.BLACK;
+        }
+        String message;
+        if (color != null) {
+            message = "User " + username + " has joined as player " + (color == ChessGame.TeamColor.WHITE ? "White." : "Black.");
+        } else {
+            message = "User " + username + " has joined as an observer.";
+        }
+        return message;
     }
 
     private void connect(String authToken, int gameID, Session rootSession) throws ResponseException, DataAccessException, IOException {
-        ChessGame game = getGame(authToken, gameID);
+        connectionManager.add(rootSession, gameID);
+        GameData gameData = getGameData(authToken, gameID);
+        ChessGame game = gameData.game();
         LoadGameMessage loadGameMessage = new LoadGameMessage(LOAD_GAME, game);
-        connectionManager.broadcastToGameExclusive(rootSession, gameID, loadGameMessage);
-
+        connectionManager.broadcastToGameIndividual(rootSession, gameID, loadGameMessage);
 
         // Send a NotificationMessage to all other clients saying the user has joined (observer or player + color)
+        String username = getUsername(authToken);
+        String message = getConnectMessage(username, gameData);
+        NotificationMessage notificationMessage = new NotificationMessage(NOTIFICATION, message);
+        connectionManager.broadcastToGameExclusive(rootSession, gameID, notificationMessage);
     }
 }
