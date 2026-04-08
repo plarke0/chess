@@ -41,19 +41,13 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                     connect(command.getAuthToken(), command.getGameID(), wsMessageContext.session);
                 }
                 case MAKE_MOVE -> {
-                    // Verify validity
-                    // Update game
-                    // Send LoadGameMessage to all clients in the game with updated game
-                    // Send NotificationMessage to all other clients with the move just made
-                    // If the move results in check, checkmate, or stalemate, sed a NotificationMessage to all clients
+                    makeMove(command.getAuthToken(), command.getGameID(), wsMessageContext.session);
                 }
                 case LEAVE -> {
-                    // Update game to remove root client
-                    // Send NotificationMessage to all other clients
+                    leave(command.getAuthToken(), command.getGameID(), wsMessageContext.session);
                 }
                 case RESIGN -> {
-                    // Mark the game as over and update it
-                    // Sends a NotificationMessage to all clients
+                    resign(command.getAuthToken(), command.getGameID(), wsMessageContext.session);
                 }
             }
         } catch (IOException ex) {
@@ -128,5 +122,23 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         String message = getConnectMessage(username, gameData);
         NotificationMessage notificationMessage = new NotificationMessage(NOTIFICATION, message);
         connectionManager.broadcastToGameExclusive(rootSession, gameID, notificationMessage);
+    }
+
+    private void makeMove(String authToken, int gameID, Session rootSession) throws ResponseException, DataAccessException, IOException {
+        // Verify validity
+        // Update game
+        // Send LoadGameMessage to all clients in the game with updated game
+        // Send NotificationMessage to all other clients with the move just made
+        // If the move results in check, checkmate, or stalemate, sed a NotificationMessage to all clients
+    }
+
+    private void leave(String authToken, int gameID, Session rootSession) throws ResponseException, DataAccessException, IOException {
+        // Update game to remove root client
+        // Send NotificationMessage to all other clients
+    }
+
+    private void resign(String authToken, int gameID, Session rootSession) throws ResponseException, DataAccessException, IOException {
+        // Mark the game as over and update it
+        // Sends a NotificationMessage to all clients
     }
 }
