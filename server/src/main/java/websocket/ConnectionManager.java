@@ -17,26 +17,39 @@ public class ConnectionManager {
         connections.remove(session);
     }
 
-    public void broadcastToGame(int gameID, ServerMessage notification) throws IOException {
-        String msg = notification.toString();
-        for (SessionData connectionData : connections.values()) {
-            Session session = connectionData.session();
-            int connectionGameID = connectionData.gameID();
-            if (session.isOpen()) {
-                if (connectionGameID == gameID) {
-                    session.getRemote().sendString(msg);
-                }
-            }
-        }
+    public void broadcastToGame(int connectionGameID, ServerMessage notification) throws IOException {
+        broadcastToGameWithCondition(
+                notification,
+                (session, gameID) -> gameID == connectionGameID
+        );
     }
 
-    public void broadcastToGameExclusive(Session excludedSession, int gameID, ServerMessage notification) throws IOException {
+    public void broadcastToGameExclusive(Session excludedSession, int connectionGameID, ServerMessage notification) throws IOException {
+        broadcastToGameWithCondition(
+                notification,
+                (session, gameID) -> !session.equals(excludedSession) && gameID == connectionGameID
+        );
+    }
+
+    public void broadcastToGameIndividual(Session chosenSession, int chosenGameID, ServerMessage notification) throws IOException {
+        broadcastToGameWithCondition(
+                notification,
+                (session, gameID) -> session.equals(chosenSession) && gameID == chosenGameID
+        );
+    }
+
+    @FunctionalInterface
+    private interface Condition {
+        Boolean check(Session session, int gameID);
+    }
+
+    private void broadcastToGameWithCondition(ServerMessage notification, Condition condition) throws IOException {
         String msg = notification.toString();
         for (SessionData connectionData : connections.values()) {
             Session session = connectionData.session();
-            int connectionGameID = connectionData.gameID();
+            int gameID = connectionData.gameID();
             if (session.isOpen()) {
-                if (!session.equals(excludedSession) && connectionGameID == gameID) {
+                if (condition.check(session, gameID)) {
                     session.getRemote().sendString(msg);
                 }
             }
