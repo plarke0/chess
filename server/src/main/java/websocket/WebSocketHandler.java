@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import responses.ResponseException;
 import websocket.commands.UserGameCommand;
 import org.eclipse.jetty.websocket.api.Session;
+import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 
@@ -33,8 +34,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     @Override
     public void handleMessage(@NotNull WsMessageContext wsMessageContext) throws ResponseException, DataAccessException{
+        UserGameCommand command = new Gson().fromJson(wsMessageContext.message(), UserGameCommand.class);
         try {
-            UserGameCommand command = new Gson().fromJson(wsMessageContext.message(), UserGameCommand.class);
             switch (command.getCommandType()) {
                 case CONNECT -> {
                     connect(command.getAuthToken(), command.getGameID(), wsMessageContext.session);
@@ -57,6 +58,13 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             }
         } catch (IOException ex) {
             ex.printStackTrace();
+        } catch (ResponseException | DataAccessException ex) {
+            ErrorMessage errorMessage = new ErrorMessage(ERROR, ex.getMessage());
+            try {
+                connectionManager.broadcastToGameIndividual(wsMessageContext.session, command.getGameID(), errorMessage);
+            } catch (IOException e) {
+                ex.printStackTrace();
+            }
         }
     }
 
