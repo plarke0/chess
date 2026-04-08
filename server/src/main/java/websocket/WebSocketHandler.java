@@ -124,7 +124,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         LoadGameMessage loadGameMessage = new LoadGameMessage(LOAD_GAME, game);
         connectionManager.broadcastToGameIndividual(rootSession, gameID, loadGameMessage);
 
-        // Send a NotificationMessage to all other clients saying the user has joined (observer or player + color)
         String username = getUsername(authToken);
         String message = getConnectMessage(username, gameData);
         NotificationMessage notificationMessage = new NotificationMessage(NOTIFICATION, message);
