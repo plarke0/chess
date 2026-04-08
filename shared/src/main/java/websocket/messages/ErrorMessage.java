@@ -8,4 +8,9 @@ public class ErrorMessage extends ServerMessage {
         super(type);
         this.content = content;
     }
+
+    @Override
+    public String getContent() {
+        return content;
+    }
 }

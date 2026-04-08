@@ -10,4 +10,9 @@ public class LoadGameMessage extends ServerMessage {
         super(type);
         this.content = content;
     }
+
+    @Override
+    public ChessGame getContent() {
+        return content;
+    }
 }

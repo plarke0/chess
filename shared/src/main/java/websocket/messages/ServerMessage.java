@@ -10,7 +10,7 @@ import java.util.Objects;
  * Note: You can add to this class, but you should not alter the existing
  * methods.
  */
-public class ServerMessage {
+public abstract class ServerMessage {
     ServerMessageType serverMessageType;
 
     public enum ServerMessageType {
@@ -30,6 +30,8 @@ public class ServerMessage {
     public String toString() {
         return new Gson().toJson(this);
     }
+
+    public abstract Object getContent();
 
     @Override
     public boolean equals(Object o) {
