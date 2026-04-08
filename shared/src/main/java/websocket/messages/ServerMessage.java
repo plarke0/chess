@@ -10,9 +10,8 @@ import java.util.Objects;
  * Note: You can add to this class, but you should not alter the existing
  * methods.
  */
-public class ServerMessage<T> {
+public class ServerMessage {
     ServerMessageType serverMessageType;
-    T content = null;
 
     public enum ServerMessageType {
         LOAD_GAME,
@@ -24,21 +23,8 @@ public class ServerMessage<T> {
         this.serverMessageType = type;
     }
 
-    public ServerMessage(ServerMessageType type, T content) {
-        this.serverMessageType = type;
-        this.content = content;
-    }
-
     public ServerMessageType getServerMessageType() {
         return this.serverMessageType;
-    }
-
-    public T getContent() {
-        return content;
-    }
-
-    public void setContent(T content) {
-        this.content = content;
     }
 
     public String toString() {
