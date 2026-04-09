@@ -30,8 +30,8 @@ public class SignedOutClient implements Client{
             return switch (cmd) {
                 case "help" -> help();
                 case "quit" -> quit();
-                case "login" -> login(params, currentClientData);
-                case "register" -> register(params, currentClientData);
+                case "login" -> login(params);
+                case "register" -> register(params);
                 case null, default -> unrecognisedCommand(cmd);
             };
         } catch (IllegalArgumentException | ResponseException ex) {
@@ -57,7 +57,7 @@ public class SignedOutClient implements Client{
         return new ClientResponse("quit", null, "Goodbye!");
     }
 
-    private ClientResponse login(String[] params, ClientData currentClientData) throws ResponseException {
+    private ClientResponse login(String[] params) throws ResponseException {
         validateCommand(params, 2);
         LoginRequest loginRequest = new LoginRequest(params[0], params[1]);
         LoginResponse loginResponse = serverFacade.loginUser(loginRequest);
@@ -65,7 +65,7 @@ public class SignedOutClient implements Client{
         return new ClientResponse("signedInClient", newClientData, "Logged in as " + loginResponse.username());
     }
 
-    private ClientResponse register(String[] params, ClientData currentClientData) throws ResponseException {
+    private ClientResponse register(String[] params) throws ResponseException {
         validateCommand(params, 3);
         RegisterRequest registerRequest = new RegisterRequest(params[0], params[1], params[2]);
         RegisterResponse registerResponse = serverFacade.registerUser(registerRequest);

@@ -19,6 +19,7 @@ public class SignedInClient implements Client{
 
     private final String serverURL;
     private final ServerFacade serverFacade;
+    private ClientData currentClientData;
 
     public SignedInClient(String serverURL) {
         this.serverURL = serverURL;
@@ -27,16 +28,17 @@ public class SignedInClient implements Client{
 
     public ClientResponse eval(String line, ClientData currentClientData) {
         try {
+            this.currentClientData = currentClientData;
             String[] args = line.toLowerCase().split(" ");
             String cmd = (args.length > 0) ? args[0] : null;
             String[] params = Arrays.copyOfRange(args, 1, args.length);
             return switch (cmd) {
                 case "help" -> help();
-                case "logout" -> logout(currentClientData);
-                case "create" -> createGame(params, currentClientData);
-                case "list" -> listGames(currentClientData);
-                case "join" -> joinGame(params, currentClientData);
-                case "observe" -> observeGame(params, currentClientData);
+                case "logout" -> logout();
+                case "create" -> createGame(params);
+                case "list" -> listGames();
+                case "join" -> joinGame(params);
+                case "observe" -> observeGame(params);
                 case null, default -> unrecognisedCommand(cmd);
             };
         } catch (IllegalArgumentException | ResponseException ex) {
@@ -60,20 +62,20 @@ public class SignedInClient implements Client{
         return new ClientResponse(null, null, msg);
     }
 
-    private ClientResponse logout(ClientData currentClientData) throws ResponseException {
+    private ClientResponse logout() throws ResponseException {
         serverFacade.logoutUser(currentClientData.getAuthToken());
         ClientData newClientData = new ClientData(null, null, null);
         return new ClientResponse("signedOutClient", newClientData, "Successfully logged out");
     }
 
-    private ClientResponse createGame(String[] params, ClientData currentClientData) throws ResponseException {
+    private ClientResponse createGame(String[] params) throws ResponseException {
         validateCommand(params, 1);
         CreateGameRequest createGameRequest = new CreateGameRequest(params[0]);
         CreateGameResponse createGameResponse = serverFacade.createGame(createGameRequest, currentClientData.getAuthToken());
         return new ClientResponse(null, null, "Created new game named '" + params[0] + "'");
     }
 
-    private ClientResponse listGames(ClientData currentClientData) throws ResponseException {
+    private ClientResponse listGames() throws ResponseException {
         ListGamesResponse listGamesResponse = serverFacade.listGames(currentClientData.getAuthToken());
         ClientData newClientData = new ClientData(currentClientData.getUsername(), currentClientData.getAuthToken(), null);
 
@@ -89,7 +91,7 @@ public class SignedInClient implements Client{
         return new ClientResponse(null, newClientData, result.toString());
     }
 
-    private ClientResponse joinGame(String[] params, ClientData currentClientData) throws ResponseException {
+    private ClientResponse joinGame(String[] params) throws ResponseException {
         validateCommand(params, 2);
         int gameID;
         try {
@@ -106,7 +108,7 @@ public class SignedInClient implements Client{
         return new ClientResponse("gameClient", newClientData, "Successfully joined game " + gameID + " as player " + params[1]);
     }
 
-    private ClientResponse observeGame(String[] params, ClientData currentClientData) {
+    private ClientResponse observeGame(String[] params) {
         validateCommand(params, 1);
         int gameID;
         try {
@@ -119,7 +121,7 @@ public class SignedInClient implements Client{
         return new ClientResponse("gameClient", newClientData, "Now observing game " + gameID);
     }
 
-    private GameData getGameData(int gameID, String color, ClientData currentClientData) {
+    private GameData getGameData(int gameID, String color, ClientData clientData) {
         ChessBoard mockBoard = new ChessBoard();
         mockBoard.resetBoard();
         ChessGame mockGame = new ChessGame();
@@ -127,8 +129,8 @@ public class SignedInClient implements Client{
         mockGame.setBoard(mockBoard);
         return new GameData(
                 gameID,
-                (color.equals("WHITE")) ? currentClientData.getUsername() : null,
-                (color.equals("BLACK")) ? currentClientData.getUsername() : null,
+                (color.equals("WHITE")) ? clientData.getUsername() : null,
+                (color.equals("BLACK")) ? clientData.getUsername() : null,
                 "mock",
                 mockGame
         );

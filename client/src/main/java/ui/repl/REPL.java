@@ -10,7 +10,7 @@ public class REPL {
     private final SignedOutClient signedOutClient;
     private final SignedInClient signedInClient;
     private final GameClient gameClient;
-    Client currentClient;
+    Client currentClientState;
 
     public ClientData clientData = new ClientData();
 
@@ -18,7 +18,7 @@ public class REPL {
          signedOutClient = new SignedOutClient(serverURL);
          signedInClient = new SignedInClient(serverURL);
          gameClient = new GameClient(serverURL);
-         currentClient = signedOutClient;
+         currentClientState = signedOutClient;
     }
 
     public void run() {
@@ -32,11 +32,11 @@ public class REPL {
             String line = scanner.nextLine();
 
             try {
-                ClientResponse response = currentClient.eval(line, clientData);
+                ClientResponse response = currentClientState.eval(line, clientData);
                 switch (response.newClient()) {
-                    case "signedOutClient" -> currentClient = signedOutClient;
-                    case "signedInClient" -> currentClient = signedInClient;
-                    case "gameClient" -> currentClient = gameClient;
+                    case "signedOutClient" -> currentClientState = signedOutClient;
+                    case "signedInClient" -> currentClientState = signedInClient;
+                    case "gameClient" -> currentClientState = gameClient;
                     case "quit" -> {
                         break replLoop;
                     }
@@ -60,9 +60,9 @@ public class REPL {
 
     public void printPrompt() {
         System.out.print(RESET_TEXT_COLOR + RESET_BG_COLOR);
-        if (currentClient == gameClient) {
+        if (currentClientState == gameClient) {
             gameClient.drawBoard(clientData);
         }
-        System.out.print("\n[" + currentClient.getPromptTitle() + "] >>> " + SET_TEXT_COLOR_GREEN);
+        System.out.print("\n[" + currentClientState.getPromptTitle() + "] >>> " + SET_TEXT_COLOR_GREEN);
     }
 }
