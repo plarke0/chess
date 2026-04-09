@@ -1,5 +1,6 @@
 package ui.repl.clients;
 
+import chess.ChessPosition;
 import client.ServerFacade;
 import client.WebSocketFacade;
 import model.GameData;
@@ -9,6 +10,8 @@ import static websocket.commands.UserGameCommand.CommandType.*;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static ui.EscapeSequences.SET_TEXT_COLOR_RED;
 import static ui.repl.clients.ClientMethods.*;
@@ -37,7 +40,7 @@ public class GameClient implements Client{
             String[] params = Arrays.copyOfRange(args, 1, args.length);
             return switch (cmd) {
                 case "redraw" -> redraw();
-                case "highlight" -> highlight();
+                case "highlight" -> highlight(params);
                 case "move" -> move();
                 case "leave" -> leave();
                 case "resign" -> resign();
@@ -61,8 +64,19 @@ public class GameClient implements Client{
         return new ClientResponse(null, null, "\n");
     }
 
-    private ClientResponse highlight() {
-        return null;
+    private ClientResponse highlight(String[] params) throws IllegalArgumentException{
+        validateCommand(params, 1);
+        String sourceString = params[0];
+        validatePositionString(sourceString);
+
+        String user = currentClientData.getUsername();
+        GameData activeGame = currentClientData.getActiveGame();
+        Boolean isWhiteView = !user.equals(activeGame.blackUsername());
+
+        ChessPosition sourcePosition = decryptChessPosition(sourceString);
+
+        chessBoard.drawHighlightedBoard(activeGame.game().getBoard(), isWhiteView, sourcePosition);
+        return new ClientResponse(null, null, "\n");
     }
 
     private ClientResponse move() {
@@ -105,5 +119,31 @@ public class GameClient implements Client{
         GameData activeGame = clientData.getActiveGame();
         Boolean isWhiteView = !user.equals(activeGame.blackUsername());
         chessBoard.drawBoard(activeGame.game().getBoard(), isWhiteView);
+    }
+
+    private ChessPosition decryptChessPosition(String position) {
+        char rowChar = position.charAt(1);
+        char columnChar = position.charAt(0);
+
+        int rowInt = rowChar - '1' + 1;
+        int columnInt = columnChar - 'a' + 1;
+
+        return new ChessPosition(rowInt, columnInt);
+    }
+
+    private static void validatePositionString(String position) throws IllegalArgumentException {
+        if (position.length() != 2) {
+            throw new IllegalArgumentException(
+                    "'" + position + "' is not a valid chess position"
+            );
+        }
+
+        Pattern pattern = Pattern.compile("[abcdefgh][12345678]");
+        Matcher matcher = pattern.matcher(position);
+        if (!matcher.find()) {
+            throw new IllegalArgumentException(
+                    "'" + position + "' is not a valid chess position"
+            );
+        }
     }
 }
