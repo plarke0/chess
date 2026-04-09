@@ -114,8 +114,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     private void connect(String authToken, int gameID, Session rootSession) throws ResponseException, DataAccessException, IOException {
         connectionManager.add(rootSession, gameID);
         GameData gameData = getGameData(authToken, gameID);
-        ChessGame game = gameData.game();
-        LoadGameMessage loadGameMessage = new LoadGameMessage(LOAD_GAME, game);
+        LoadGameMessage loadGameMessage = new LoadGameMessage(LOAD_GAME, gameData);
         connectionManager.broadcastToGameIndividual(rootSession, gameID, loadGameMessage);
 
         String username = getUsername(authToken);
