@@ -95,7 +95,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     @NotNull
-    private static String getConnectMessage(String username, GameData gameData) {
+    private static String constructConnectMessage(String username, GameData gameData) {
         ChessGame.TeamColor color = null;
         if (username.equals(gameData.whiteUsername())) {
             color = ChessGame.TeamColor.WHITE;
@@ -118,7 +118,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         connectionManager.broadcastToGameIndividual(rootSession, gameID, loadGameMessage);
 
         String username = getUsername(authToken);
-        String message = getConnectMessage(username, gameData);
+        String message = constructConnectMessage(username, gameData);
         NotificationMessage notificationMessage = new NotificationMessage(NOTIFICATION, message);
         connectionManager.broadcastToGameExclusive(rootSession, gameID, notificationMessage);
     }
