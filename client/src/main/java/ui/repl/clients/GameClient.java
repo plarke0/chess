@@ -1,6 +1,7 @@
 package ui.repl.clients;
 
 import client.ServerFacade;
+import client.WebSocketFacade;
 import model.GameData;
 import ui.ChessBoard;
 
@@ -13,11 +14,13 @@ public class GameClient implements Client{
 
     private final String serverURL;
     private final ServerFacade serverFacade;
+    private final WebSocketFacade webSocketFacade;
     private ClientData currentClientData;
 
-    public GameClient(String serverURL) {
+    public GameClient(String serverURL, WebSocketFacade webSocketFacade) {
         this.serverURL = serverURL;
         this.serverFacade = new ServerFacade(this.serverURL);
+        this.webSocketFacade = webSocketFacade;
     }
 
     public ClientResponse eval(String line, ClientData currentClientData) {
@@ -59,9 +62,19 @@ public class GameClient implements Client{
     }
 
     private ClientResponse leave() {
+
         ClientData newClientData = new ClientData(currentClientData.getUsername(), currentClientData.getAuthToken(), null);
-        // TODO: Add check for if gameName is null
-        return new ClientResponse("signedInClient", newClientData, "Left '" + currentClientData.getActiveGame().gameName() + "'");
+        String result;
+        if (currentClientData.getActiveGame() != null) {
+            result = "Left '" + currentClientData.getActiveGame().gameName() + "'";
+        } else {
+            result = "Left game";
+        }
+        return new ClientResponse(
+                "signedInClient",
+                newClientData,
+                result
+        );
     }
 
     private ClientResponse resign() {

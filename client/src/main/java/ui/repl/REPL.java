@@ -28,7 +28,7 @@ public class REPL {
         }
          signedOutClient = new SignedOutClient(serverURL);
          signedInClient = new SignedInClient(serverURL, webSocketFacade);
-         gameClient = new GameClient(serverURL);
+         gameClient = new GameClient(serverURL, webSocketFacade);
          currentClientState = signedOutClient;
     }
 
