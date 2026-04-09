@@ -22,7 +22,7 @@ public class REPL {
     }
 
     public void run() {
-        System.out.println("Welcome to CS240 chess. Type 'help' to get started.");
+        printNormal("Welcome to CS240 chess. Type 'help' to get started.");
 
         Scanner scanner = new Scanner(System.in);
         var result = "";
@@ -49,10 +49,10 @@ public class REPL {
                 }
 
                 result = response.result();
-                System.out.print(SET_TEXT_COLOR_BLUE + result);
+                printNormal(result);
             } catch (Throwable throwable) {
                 var msg = throwable.toString();
-                System.out.print(SET_TEXT_COLOR_RED + msg);
+                printError(msg);
             }
         }
         System.out.println();
@@ -64,5 +64,13 @@ public class REPL {
             gameClient.drawBoard(clientData);
         }
         System.out.print("\n[" + currentClientState.getPromptTitle() + "] >>> " + SET_TEXT_COLOR_GREEN);
+    }
+
+    private void printNormal(String text) {
+        System.out.print(SET_TEXT_COLOR_BLUE + text);
+    }
+
+    private void printError(String text) {
+        System.out.print(SET_TEXT_COLOR_RED + text);
     }
 }
