@@ -4,6 +4,8 @@ import client.ServerFacade;
 import client.WebSocketFacade;
 import model.GameData;
 import ui.ChessBoard;
+import websocket.commands.UserGameCommand;
+import static websocket.commands.UserGameCommand.CommandType.*;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -39,7 +41,7 @@ public class GameClient implements Client{
                 case "help" -> help();
                 case null, default -> unrecognisedCommand(cmd);
             };
-        } catch (IllegalArgumentException ex) {
+        } catch (IllegalArgumentException | IllegalStateException ex) {
             String msg = ex.getMessage();
             return new ClientResponse(null, null, SET_TEXT_COLOR_RED + msg);
         } catch (IOException ex) {
@@ -64,19 +66,19 @@ public class GameClient implements Client{
         return null;
     }
 
-    private ClientResponse leave() {
+    private ClientResponse leave() throws IOException, IllegalStateException {
+        if (currentClientData.getActiveGame() == null) {
+            throw new IllegalStateException("Error: Not currently in a game");
+        }
+
+        UserGameCommand leaveCommand = new UserGameCommand(LEAVE, currentClientData.getAuthToken(), currentClientData.getActiveGame().gameID());
+        webSocketFacade.sendCommand(leaveCommand);
 
         ClientData newClientData = new ClientData(currentClientData.getUsername(), currentClientData.getAuthToken(), null);
-        String result;
-        if (currentClientData.getActiveGame() != null) {
-            result = "Left '" + currentClientData.getActiveGame().gameName() + "'";
-        } else {
-            result = "Left game";
-        }
         return new ClientResponse(
                 "signedInClient",
                 newClientData,
-                result
+                "Left '" + currentClientData.getActiveGame().gameName() + "'"
         );
     }
 

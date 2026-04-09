@@ -133,7 +133,12 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     private void leave(String authToken, int gameID, Session rootSession) throws ResponseException, DataAccessException, IOException {
         // Update game to remove root client
+        connectionManager.remove(rootSession);
         // Send NotificationMessage to all other clients
+        String username = getUsername(authToken);
+        String message = username + " has left the game";
+        NotificationMessage notificationMessage = new NotificationMessage(NOTIFICATION, message);
+        connectionManager.broadcastToGameExclusive(rootSession, gameID, notificationMessage);
     }
 
     private void resign(String authToken, int gameID, Session rootSession) throws ResponseException, DataAccessException, IOException {
