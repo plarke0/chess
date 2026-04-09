@@ -66,7 +66,7 @@ public class REPL {
                 printError(msg);
             }
         }
-        System.out.println();
+        printNewline();
     }
 
     public void printPrompt() {
@@ -83,6 +83,10 @@ public class REPL {
 
     private void printError(String text) {
         System.out.print(SET_TEXT_COLOR_RED + text);
+    }
+
+    private void printNewline() {
+        System.out.println();
     }
 
     public void evaluateNotificationMessage(NotificationMessage notificationMessage) {
