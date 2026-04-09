@@ -1,6 +1,10 @@
 package ui.repl;
 
+import model.GameData;
 import ui.repl.clients.*;
+import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
 
 import java.util.Scanner;
 
@@ -72,5 +76,20 @@ public class REPL {
 
     private void printError(String text) {
         System.out.print(SET_TEXT_COLOR_RED + text);
+    }
+
+    public void evaluateNotificationMessage(NotificationMessage notificationMessage) {
+        String notificationText = notificationMessage.getContent();
+        printNormal(notificationText);
+    }
+
+    public void evaluateErrorMessage(ErrorMessage errorMessage) {
+        String errorText = errorMessage.getContent();
+        printError("ERROR: " + errorText);
+    }
+
+    public void evaluateLoadGameMessage(LoadGameMessage loadGameMessage) {
+        GameData gameData = loadGameMessage.getContent();
+        clientData.setActiveGame(gameData);
     }
 }
