@@ -92,11 +92,15 @@ public class REPL {
     public void evaluateNotificationMessage(NotificationMessage notificationMessage) {
         String notificationText = notificationMessage.getContent();
         printNormal(notificationText);
+        printNewline();
+        printPrompt();
     }
 
     public void evaluateErrorMessage(ErrorMessage errorMessage) {
         String errorText = errorMessage.getContent();
         printError("ERROR: " + errorText);
+        printNewline();
+        printPrompt();
     }
 
     public void evaluateLoadGameMessage(LoadGameMessage loadGameMessage) {
