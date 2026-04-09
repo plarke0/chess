@@ -33,7 +33,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     @Override
-    public void handleMessage(@NotNull WsMessageContext wsMessageContext) throws ResponseException, DataAccessException{
+    public void handleMessage(@NotNull WsMessageContext wsMessageContext) {
         UserGameCommand command = new Gson().fromJson(wsMessageContext.message(), UserGameCommand.class);
         try {
             switch (command.getCommandType()) {
