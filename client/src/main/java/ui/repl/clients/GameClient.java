@@ -20,10 +20,13 @@ public class GameClient implements Client{
     private final WebSocketFacade webSocketFacade;
     private ClientData currentClientData;
 
+    private final ChessBoard chessBoard;
+
     public GameClient(String serverURL, WebSocketFacade webSocketFacade) {
         this.serverURL = serverURL;
         this.serverFacade = new ServerFacade(this.serverURL);
         this.webSocketFacade = webSocketFacade;
+        this.chessBoard = new ChessBoard();
     }
 
     public ClientResponse eval(String line, ClientData currentClientData) {
@@ -101,6 +104,6 @@ public class GameClient implements Client{
         String user = clientData.getUsername();
         GameData activeGame = clientData.getActiveGame();
         Boolean isWhiteView = !user.equals(activeGame.blackUsername());
-        ChessBoard.drawBoard(activeGame.game().getBoard(), isWhiteView);
+        chessBoard.drawBoard(activeGame.game().getBoard(), isWhiteView);
     }
 }

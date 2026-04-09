@@ -15,6 +15,19 @@ public class ChessPiece {
     private final ChessGame.TeamColor pieceColor;
     private ChessPiece.PieceType type;
 
+    private static final String WHITE_KING = " ♔ ";
+    private static final String WHITE_QUEEN = " ♕ ";
+    private static final String WHITE_BISHOP = " ♗ ";
+    private static final String WHITE_KNIGHT = " ♘ ";
+    private static final String WHITE_ROOK = " ♖ ";
+    private static final String WHITE_PAWN = " ♙ ";
+    private static final String BLACK_KING = " ♚ ";
+    private static final String BLACK_QUEEN = " ♛ ";
+    private static final String BLACK_BISHOP = " ♝ ";
+    private static final String BLACK_KNIGHT = " ♞ ";
+    private static final String BLACK_ROOK = " ♜ ";
+    private static final String BLACK_PAWN = " ♟ ";
+
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
         this.type = type;
@@ -74,16 +87,25 @@ public class ChessPiece {
 
     @Override
     public String toString() {
-        String piece =  switch (this.type) {
-            case KING -> "k";
-            case PAWN -> "p";
-            case ROOK -> "r";
-            case QUEEN -> "q";
-            case BISHOP -> "b";
-            case KNIGHT -> "n";
-        };
+        String piece;
         if (this.pieceColor == ChessGame.TeamColor.WHITE) {
-            piece = piece.toUpperCase();
+            piece = switch (this.type) {
+                case PAWN -> WHITE_PAWN;
+                case KNIGHT -> WHITE_KNIGHT;
+                case ROOK -> WHITE_ROOK;
+                case BISHOP -> WHITE_BISHOP;
+                case QUEEN -> WHITE_QUEEN;
+                case KING -> WHITE_KING;
+            };
+        } else {
+            piece = switch (this.type) {
+                case PAWN -> BLACK_PAWN;
+                case KNIGHT -> BLACK_KNIGHT;
+                case ROOK -> BLACK_ROOK;
+                case BISHOP -> BLACK_BISHOP;
+                case QUEEN -> BLACK_QUEEN;
+                case KING -> BLACK_KING;
+            };
         }
         return piece;
     }

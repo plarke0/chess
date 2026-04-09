@@ -2,8 +2,9 @@ package ui;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 
-import chess.ChessGame;
+import chess.ChessMove;
 import chess.ChessPiece;
 import chess.ChessPosition;
 import static ui.EscapeSequences.*;
@@ -12,7 +13,38 @@ public class ChessBoard {
 
     private static PrintStream out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
 
-    public static void drawBoard(chess.ChessBoard board, Boolean isWhiteView) {
+    private boolean isWhiteView;
+    private ChessPosition highlightSource;
+    private ArrayList<ChessPosition> highlightedPositions;
+
+    private enum HighlightType {
+        NONE,
+        SOURCE,
+        DESTINATION
+    }
+
+    public void drawHighlightedBoard(chess.ChessBoard board, Boolean isWhiteView, ChessPosition source) {
+        ChessPiece piece = board.getPiece(source);
+        if (piece != null) {
+            highlightSource = source;
+            highlightedPositions = new ArrayList<>();
+            for (ChessMove move : piece.pieceMoves(board, source)) {
+                highlightedPositions.add(move.getEndPosition());
+            }
+        } else {
+            highlightSource = null;
+            highlightedPositions = null;
+        }
+
+        drawBoard(board, isWhiteView);
+
+        highlightSource = null;
+        highlightedPositions = null;
+    }
+
+    public void drawBoard(chess.ChessBoard board, Boolean isWhiteView) {
+        this.isWhiteView = isWhiteView;
+
         var boardArray = new ChessPiece[8][8];
         for (ChessPosition position : board) {
             int row = position.getRow();
@@ -21,15 +53,15 @@ public class ChessBoard {
         }
 
         out.println();
-        drawColumnHeaders(isWhiteView);
-        drawRows(isWhiteView, boardArray);
-        drawColumnHeaders(isWhiteView);
+        drawColumnHeaders();
+        drawRows(boardArray);
+        drawColumnHeaders();
     }
 
-    private static void drawColumnHeaders(Boolean isWhiteView) {
+    private void drawColumnHeaders() {
         drawRowHeaderPadding();
         for (int headerNumber = 0; headerNumber < 8; headerNumber++) {
-            drawColumnHeader(headerNumber, isWhiteView);
+            drawColumnHeader(headerNumber);
         }
         drawRowHeaderPadding();
 
@@ -43,28 +75,28 @@ public class ChessBoard {
         out.print(EMPTY);
     }
 
-    private static void drawColumnHeader(int headerNumber, Boolean isWhiteView) {
+    private void drawColumnHeader(int headerNumber) {
         String[] headers = {"a", "b", "c", "d", "e", "f", "g", "h"};
-        drawHeader(headerNumber, isWhiteView, headers);
+        drawHeader(headerNumber, headers);
     }
 
-    private static void drawRows(Boolean isWhiteView, ChessPiece[][] boardArray) {
+    private void drawRows(ChessPiece[][] boardArray) {
         for (int i = 0; i < 8; i++) {
-            drawRowHeader(i, isWhiteView);
-            drawBoardRow(i, isWhiteView, boardArray);
-            drawRowHeader(i, isWhiteView);
+            drawRowHeader(i);
+            drawBoardRow(i, boardArray);
+            drawRowHeader(i);
 
             resetColors();
             out.println();
         }
     }
 
-    private static void drawRowHeader(int headerNumber, Boolean isWhiteView) {
+    private void drawRowHeader(int headerNumber) {
         String[] headers = {"8", "7", "6", "5", "4", "3", "2", "1"};
-        drawHeader(headerNumber, isWhiteView, headers);
+        drawHeader(headerNumber, headers);
     }
 
-    private static void drawHeader(int headerNumber, Boolean isWhiteView, String[] headers) {
+    private void drawHeader(int headerNumber, String[] headers) {
         int headerIndex = headerNumber;
         if (!isWhiteView) {
             headerIndex = 7 - headerNumber;
@@ -80,14 +112,21 @@ public class ChessBoard {
         out.print("\u2003" + headerValue + " ");
     }
 
-    private static void drawBoardRow(int rowNumber, Boolean isWhiteView, ChessPiece[][] boardArray) {
+    private void drawBoardRow(int rowNumber, ChessPiece[][] boardArray) {
        for (int columnNumber = 0; columnNumber < 8; columnNumber++) {
-            drawBoardSquare(boardArray, rowNumber, columnNumber, isWhiteView);
+            drawBoardSquare(boardArray, rowNumber, columnNumber);
         }
     }
 
-    private static void drawBoardSquare(ChessPiece[][] boardArray, int rowNumber, int columnNumber, Boolean isWhiteView) {
-        setSquareColor(rowNumber, columnNumber);
+    private void drawBoardSquare(ChessPiece[][] boardArray, int rowNumber, int columnNumber) {
+        ChessPosition squarePosition = new ChessPosition(rowNumber, columnNumber);
+        if (highlightedPositions != null && highlightedPositions.contains(squarePosition)) {
+            setSquareColor(rowNumber, columnNumber, HighlightType.DESTINATION);
+        } else if (squarePosition.equals(highlightSource)) {
+            setSquareColor(rowNumber, columnNumber, HighlightType.SOURCE);
+        } else {
+            setSquareColor(rowNumber, columnNumber, HighlightType.NONE);
+        }
 
         int rowIndex = rowNumber;
         int columnIndex = columnNumber;
@@ -105,34 +144,16 @@ public class ChessBoard {
         }
     }
 
-    private static void setSquareColor(int rowNumber, int columnNumber) {
+    private static void setSquareColor(int rowNumber, int columnNumber, HighlightType highlightType) {
         if (rowNumber % 2 == columnNumber % 2) {
-            setWhite();
+            setWhite(highlightType);
         } else {
-            setBlack();
+            setBlack(highlightType);
         }
     }
 
     private static void drawChessPiece(ChessPiece piece) {
-        if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
-            switch (piece.getPieceType()) {
-                case PAWN -> out.print(WHITE_PAWN);
-                case KNIGHT -> out.print(WHITE_KNIGHT);
-                case ROOK -> out.print(WHITE_ROOK);
-                case BISHOP -> out.print(WHITE_BISHOP);
-                case QUEEN -> out.print(WHITE_QUEEN);
-                case KING -> out.print(WHITE_KING);
-            }
-        } else {
-            switch (piece.getPieceType()) {
-                case PAWN -> out.print(BLACK_PAWN);
-                case KNIGHT -> out.print(BLACK_KNIGHT);
-                case ROOK -> out.print(BLACK_ROOK);
-                case BISHOP -> out.print(BLACK_BISHOP);
-                case QUEEN -> out.print(BLACK_QUEEN);
-                case KING -> out.print(BLACK_KING);
-            }
-        }
+        out.print(piece);
     }
 
     private static void resetColors() {
@@ -140,13 +161,21 @@ public class ChessBoard {
         out.print(RESET_TEXT_COLOR);
     }
 
-    private static void setWhite() {
-        out.print(SET_BG_COLOR_WHITE);
+    private static void setWhite(HighlightType highlightType) {
+        switch (highlightType) {
+            case NONE -> out.print(SET_BG_COLOR_WHITE);
+            case SOURCE -> out.print(SET_BG_COLOR_YELLOW);
+            case DESTINATION -> out.print(SET_BG_COLOR_GREEN);
+        }
         out.print(RESET_TEXT_COLOR);
     }
 
-    private static void setBlack() {
-        out.print(SET_BG_COLOR_BLACK);
+    private static void setBlack(HighlightType highlightType) {
+        switch (highlightType) {
+            case NONE -> out.print(SET_BG_COLOR_BLACK);
+            case SOURCE -> out.print(SET_BG_COLOR_DARK_YELLOW);
+            case DESTINATION -> out.print(SET_BG_COLOR_DARK_GREEN);
+        }
         out.print(RESET_TEXT_COLOR);
     }
 }
