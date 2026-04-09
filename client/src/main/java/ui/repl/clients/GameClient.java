@@ -46,7 +46,8 @@ public class GameClient implements Client{
     }
 
     private ClientResponse redraw() {
-        return null;
+        drawBoard(currentClientData);
+        return new ClientResponse(null, null, "\n");
     }
 
     private ClientResponse highlight() {
