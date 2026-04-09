@@ -67,7 +67,7 @@ public class GameService {
         GameData updatedGameData;
         switch (joinGameRequest.playerColor()) {
             case "WHITE" -> {
-                if (gameData.whiteUsername() != null) {
+                if (gameData.whiteUsername() != null && !gameData.whiteUsername().equals(authData.username())) {
                     throw new ResponseException(403, "already taken");
                 }
                 updatedGameData = new GameData(
@@ -79,7 +79,7 @@ public class GameService {
                 );
             }
             case "BLACK" -> {
-                if (gameData.blackUsername() != null) {
+                if (gameData.blackUsername() != null && !gameData.blackUsername().equals(authData.username())) {
                     throw new ResponseException(403, "already taken");
                 }
                 updatedGameData = new GameData(
