@@ -26,30 +26,31 @@ public class WebSocketFacade extends Endpoint{
         session = container.connectToServer(this, uri);
 
         this.repl = repl;
-        this.session.addMessageHandler(new MessageHandler.Whole<ServerMessage>() {
-            public void onMessage(ServerMessage message) {
+        this.session.addMessageHandler(new MessageHandler.Whole<String>() {
+            public void onMessage(String messageJSON) {
+                ServerMessage message = new Gson().fromJson(messageJSON, ServerMessage.class);
                 ServerMessage.ServerMessageType messageType = message.getServerMessageType();
                 switch (messageType) {
-                    case NOTIFICATION -> handleNotification(message);
-                    case ERROR -> handleError(message);
-                    case LOAD_GAME -> handleLoadGame(message);
+                    case NOTIFICATION -> handleNotification(messageJSON);
+                    case ERROR -> handleError(messageJSON);
+                    case LOAD_GAME -> handleLoadGame(messageJSON);
                 }
             }
         });
     }
 
-    private void handleNotification(ServerMessage message) {
-        NotificationMessage notificationMessage = (NotificationMessage) message;
+    private void handleNotification(String messageJSON) {
+        NotificationMessage notificationMessage = new Gson().fromJson(messageJSON, NotificationMessage.class);
         repl.evaluateNotificationMessage(notificationMessage);
     }
 
-    private void handleError(ServerMessage message) {
-        ErrorMessage errorMessage = (ErrorMessage) message;
+    private void handleError(String messageJSON) {
+        ErrorMessage errorMessage = new Gson().fromJson(messageJSON, ErrorMessage.class);
         repl.evaluateErrorMessage(errorMessage);
     }
 
-    private void handleLoadGame(ServerMessage message) {
-        LoadGameMessage loadGameMessage = (LoadGameMessage) message;
+    private void handleLoadGame(String messageJSON) {
+        LoadGameMessage loadGameMessage = new Gson().fromJson(messageJSON, LoadGameMessage.class);
         repl.evaluateLoadGameMessage(loadGameMessage);
     }
 
