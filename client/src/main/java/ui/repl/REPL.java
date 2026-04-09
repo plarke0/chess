@@ -71,9 +71,6 @@ public class REPL {
 
     public void printPrompt() {
         System.out.print(RESET_TEXT_COLOR + RESET_BG_COLOR);
-        if (currentClientState == gameClient) {
-            gameClient.drawBoard(clientData);
-        }
         System.out.print("\n[" + currentClientState.getPromptTitle() + "] >>> " + SET_TEXT_COLOR_GREEN);
     }
 
@@ -106,5 +103,8 @@ public class REPL {
     public void evaluateLoadGameMessage(LoadGameMessage loadGameMessage) {
         GameData gameData = loadGameMessage.getContent();
         clientData.setActiveGame(gameData);
+        gameClient.drawBoard(clientData);
+        printNewline();
+        printPrompt();
     }
 }
