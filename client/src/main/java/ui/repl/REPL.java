@@ -1,5 +1,6 @@
 package ui.repl;
 
+import client.WebSocketFacade;
 import model.GameData;
 import ui.repl.clients.*;
 import websocket.messages.ErrorMessage;
@@ -17,10 +18,16 @@ public class REPL {
     Client currentClientState;
 
     public ClientData clientData = new ClientData();
+    private WebSocketFacade webSocketFacade;
 
     public REPL(String serverURL) {
+        try {
+            this.webSocketFacade = new WebSocketFacade(this);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
          signedOutClient = new SignedOutClient(serverURL);
-         signedInClient = new SignedInClient(serverURL);
+         signedInClient = new SignedInClient(serverURL, webSocketFacade);
          gameClient = new GameClient(serverURL);
          currentClientState = signedOutClient;
     }

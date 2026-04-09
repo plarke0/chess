@@ -3,13 +3,16 @@ package ui.repl.clients;
 import chess.ChessBoard;
 import chess.ChessGame;
 import client.ServerFacade;
+import client.WebSocketFacade;
 import model.GameData;
 import requests.CreateGameRequest;
 import requests.JoinGameRequest;
 import responses.CreateGameResponse;
 import responses.ListGamesResponse;
 import responses.ResponseException;
+import websocket.commands.UserGameCommand;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 import static ui.EscapeSequences.SET_TEXT_COLOR_RED;
@@ -19,11 +22,13 @@ public class SignedInClient implements Client{
 
     private final String serverURL;
     private final ServerFacade serverFacade;
+    private final WebSocketFacade webSocketFacade;
     private ClientData currentClientData;
 
-    public SignedInClient(String serverURL) {
+    public SignedInClient(String serverURL, WebSocketFacade webSocketFacade) {
         this.serverURL = serverURL;
         this.serverFacade = new ServerFacade(this.serverURL);
+        this.webSocketFacade = webSocketFacade;
     }
 
     public ClientResponse eval(String line, ClientData currentClientData) {
@@ -41,7 +46,7 @@ public class SignedInClient implements Client{
                 case "observe" -> observeGame(params);
                 case null, default -> unrecognisedCommand(cmd);
             };
-        } catch (IllegalArgumentException | ResponseException ex) {
+        } catch (IllegalArgumentException | ResponseException | IOException ex) {
             String msg = ex.getMessage();
             return new ClientResponse(null, null, SET_TEXT_COLOR_RED + msg);
         }
@@ -91,7 +96,7 @@ public class SignedInClient implements Client{
         return new ClientResponse(null, newClientData, result.toString());
     }
 
-    private ClientResponse joinGame(String[] params) throws ResponseException {
+    private ClientResponse joinGame(String[] params) throws ResponseException, IOException {
         validateCommand(params, 2);
         int gameID;
         try {
@@ -103,12 +108,12 @@ public class SignedInClient implements Client{
 
         JoinGameRequest joinGameRequest = new JoinGameRequest(gameID, playerColor);
         serverFacade.joinGame(joinGameRequest, currentClientData.getAuthToken());
-        GameData gameData = getGameData(gameID, params[1], currentClientData);
-        ClientData newClientData = new ClientData(currentClientData.getUsername(), currentClientData.getAuthToken(), gameData);
-        return new ClientResponse("gameClient", newClientData, "Successfully joined game " + gameID + " as player " + params[1]);
+        UserGameCommand joinCommand = new UserGameCommand(UserGameCommand.CommandType.CONNECT, currentClientData.getAuthToken(), gameID);
+        webSocketFacade.sendCommand(joinCommand);
+        return new ClientResponse("gameClient", null, "Successfully joined game " + gameID + " as player " + params[1]);
     }
 
-    private ClientResponse observeGame(String[] params) {
+    private ClientResponse observeGame(String[] params) throws IOException {
         validateCommand(params, 1);
         int gameID;
         try {
@@ -116,23 +121,8 @@ public class SignedInClient implements Client{
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("The given game ID of '" + params[0] + "' is not an integer");
         }
-        GameData gameData = getGameData(gameID, null, currentClientData);
-        ClientData newClientData = new ClientData(currentClientData.getUsername(), currentClientData.getAuthToken(), gameData);
-        return new ClientResponse("gameClient", newClientData, "Now observing game " + gameID);
-    }
-
-    private GameData getGameData(int gameID, String color, ClientData clientData) {
-        ChessBoard mockBoard = new ChessBoard();
-        mockBoard.resetBoard();
-        ChessGame mockGame = new ChessGame();
-        color = color.toUpperCase();
-        mockGame.setBoard(mockBoard);
-        return new GameData(
-                gameID,
-                (color.equals("WHITE")) ? clientData.getUsername() : null,
-                (color.equals("BLACK")) ? clientData.getUsername() : null,
-                "mock",
-                mockGame
-        );
+        UserGameCommand joinCommand = new UserGameCommand(UserGameCommand.CommandType.CONNECT, currentClientData.getAuthToken(), gameID);
+        webSocketFacade.sendCommand(joinCommand);
+        return new ClientResponse("gameClient", null, "Now observing game " + gameID);
     }
 }
