@@ -10,6 +10,7 @@ import ui.repl.REPL;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
@@ -27,21 +28,29 @@ public class WebSocketFacade extends Endpoint{
         this.repl = repl;
         this.session.addMessageHandler(new MessageHandler.Whole<ServerMessage>() {
             public void onMessage(ServerMessage message) {
-                // Check message type and call the corresponding handler method
+                ServerMessage.ServerMessageType messageType = message.getServerMessageType();
+                switch (messageType) {
+                    case NOTIFICATION -> handleNotification(message);
+                    case ERROR -> handleError(message);
+                    case LOAD_GAME -> handleLoadGame(message);
+                }
             }
         });
     }
 
-    private void handleNotification(ServerMessage notificationMessage) {
-
+    private void handleNotification(ServerMessage message) {
+        NotificationMessage notificationMessage = (NotificationMessage) message;
+        repl.evaluateNotificationMessage(notificationMessage);
     }
 
-    private void handleError(ServerMessage errorMessage) {
-
+    private void handleError(ServerMessage message) {
+        ErrorMessage errorMessage = (ErrorMessage) message;
+        repl.evaluateErrorMessage(errorMessage);
     }
 
-    private void handleLoadGame(ServerMessage loadGameMessage) {
-
+    private void handleLoadGame(ServerMessage message) {
+        LoadGameMessage loadGameMessage = (LoadGameMessage) message;
+        repl.evaluateLoadGameMessage(loadGameMessage);
     }
 
     public void sendCommand(UserGameCommand command) throws IOException {
