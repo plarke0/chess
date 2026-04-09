@@ -13,6 +13,7 @@ import responses.ResponseException;
 import websocket.commands.UserGameCommand;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import static ui.EscapeSequences.SET_TEXT_COLOR_RED;
@@ -86,12 +87,16 @@ public class SignedInClient implements Client{
         ListGamesResponse listGamesResponse = serverFacade.listGames(currentClientData.getAuthToken());
         ClientData newClientData = new ClientData(currentClientData.getUsername(), currentClientData.getAuthToken(), null);
 
+        if (listGamesResponse.games().isEmpty()) {
+            return new ClientResponse(null, newClientData, "There are no active games");
+        }
+
         StringBuilder result = new StringBuilder("The following games are active:");
         for (GameData gameData : listGamesResponse.games()) {
             int gameID = gameData.gameID();
             String gameName = gameData.gameName();
-            String whiteUser = gameData.whiteUsername();
-            String blackUser = gameData.blackUsername();
+            String whiteUser = (gameData.whiteUsername() != null) ? gameData.whiteUsername() : "Empty";
+            String blackUser = (gameData.blackUsername() != null) ? gameData.blackUsername() : "Empty";
             result.append("\n").append(gameID).append(". Game Name: ").append(gameName);
             result.append(" | White: ").append(whiteUser).append(" | Black: ").append(blackUser);
         }
