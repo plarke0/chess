@@ -27,7 +27,7 @@ public abstract class ServerMessage {
         return this.serverMessageType;
     }
 
-    public String toString() {
+    public String toJSON() {
         return new Gson().toJson(this);
     }
 

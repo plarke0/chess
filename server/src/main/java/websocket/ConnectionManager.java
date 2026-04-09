@@ -44,7 +44,7 @@ public class ConnectionManager {
     }
 
     private void broadcastToGameWithCondition(ServerMessage notification, Condition condition) throws IOException {
-        String msg = notification.toString();
+        String msg = notification.toJSON();
         for (SessionData connectionData : connections.values()) {
             Session session = connectionData.session();
             int gameID = connectionData.gameID();
