@@ -5,6 +5,7 @@ import client.WebSocketFacade;
 import model.GameData;
 import ui.ChessBoard;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 import static ui.EscapeSequences.SET_TEXT_COLOR_RED;
@@ -41,6 +42,8 @@ public class GameClient implements Client{
         } catch (IllegalArgumentException ex) {
             String msg = ex.getMessage();
             return new ClientResponse(null, null, SET_TEXT_COLOR_RED + msg);
+        } catch (IOException ex) {
+            return new ClientResponse(null, null, SET_TEXT_COLOR_RED + "Error: There was a problem with your connection");
         }
     }
 

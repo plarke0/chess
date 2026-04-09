@@ -46,9 +46,11 @@ public class SignedInClient implements Client{
                 case "observe" -> observeGame(params);
                 case null, default -> unrecognisedCommand(cmd);
             };
-        } catch (IllegalArgumentException | ResponseException | IOException ex) {
+        } catch (IllegalArgumentException | ResponseException ex) {
             String msg = ex.getMessage();
             return new ClientResponse(null, null, SET_TEXT_COLOR_RED + msg);
+        } catch (IOException ex) {
+            return new ClientResponse(null, null, SET_TEXT_COLOR_RED + "Error: There was a problem with your connection");
         }
     }
 
