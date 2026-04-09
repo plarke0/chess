@@ -51,6 +51,7 @@ public class GameClient implements Client{
 
     private ClientResponse exit() {
         ClientData newClientData = new ClientData(currentClientData.getUsername(), currentClientData.getAuthToken(), null);
+        // TODO: Add check for if gameName is null
         return new ClientResponse("signedInClient", newClientData, "Left '" + currentClientData.getActiveGame().gameName() + "'");
     }
 
