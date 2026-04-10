@@ -134,10 +134,10 @@ public class ChessBoard {
             setSquareColor(rowNumber, columnNumber, HighlightType.NONE);
         }
 
-        int rowIndex = rowNumber;
+        int rowIndex = 7 - rowNumber;
         int columnIndex = columnNumber;
         if (!isWhiteView) {
-            rowIndex = 7 - rowNumber;
+            rowIndex = rowNumber;
             columnIndex = 7 - columnIndex;
         }
 

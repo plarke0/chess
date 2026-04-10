@@ -1,10 +1,14 @@
 package ui.repl.clients;
 
+import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPiece;
 import chess.ChessPosition;
 import client.ServerFacade;
 import client.WebSocketFacade;
 import model.GameData;
 import ui.ChessBoard;
+import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import static websocket.commands.UserGameCommand.CommandType.*;
 
@@ -41,7 +45,7 @@ public class GameClient implements Client{
             return switch (cmd) {
                 case "redraw" -> redraw();
                 case "highlight" -> highlight(params);
-                case "move" -> move();
+                case "move" -> move(params);
                 case "leave" -> leave();
                 case "resign" -> resign();
                 case "help" -> help();
@@ -61,10 +65,13 @@ public class GameClient implements Client{
 
     private ClientResponse redraw() {
         drawBoard(currentClientData);
-        return new ClientResponse(null, null, "\n");
+        return new ClientResponse(null, null, "");
     }
 
-    private ClientResponse highlight(String[] params) throws IllegalArgumentException{
+    private ClientResponse highlight(String[] params) throws IllegalArgumentException, IllegalStateException {
+        if (currentClientData.getActiveGame() == null) {
+            throw new IllegalStateException("Error: Not currently in a game");
+        }
         validateCommand(params, 1);
         String sourceString = params[0];
         validatePositionString(sourceString);
@@ -76,11 +83,43 @@ public class GameClient implements Client{
         ChessPosition sourcePosition = decryptChessPosition(sourceString);
 
         chessBoard.drawHighlightedBoard(activeGame.game().getBoard(), isWhiteView, sourcePosition);
-        return new ClientResponse(null, null, "\n");
+        return new ClientResponse(null, null, "");
     }
 
-    private ClientResponse move() {
-        return null;
+    private ClientResponse move(String[] params) throws IOException {
+        if (currentClientData.getActiveGame() == null) {
+            throw new IllegalStateException("Error: Not currently in a game");
+        }
+        if (params.length != 2 && params.length != 3) {
+            throw new IllegalArgumentException(
+                    "Only " + params.length
+                            + (((params.length == 1)) ? " argument was given when " : " arguments were given when ")
+                            + "2 or 3 were needed"
+            );
+        }
+
+        ChessPosition source = decryptChessPosition(params[0]);
+        ChessPosition destination = decryptChessPosition(params[1]);
+        ChessPiece.PieceType promotionType = null;
+        if (params.length == 3) {
+            String promotionString = params[2];
+            promotionType = switch (promotionString) {
+                case "queen" -> ChessPiece.PieceType.QUEEN;
+                case "knight" -> ChessPiece.PieceType.KNIGHT;
+                case "rook" -> ChessPiece.PieceType.ROOK;
+                case "bishop" -> ChessPiece.PieceType.BISHOP;
+                default -> throw new IllegalArgumentException("Invalid promotion type '" + promotionString + "'");
+            };
+        }
+        ChessMove move = new ChessMove(source, destination, promotionType);
+        MakeMoveCommand moveCommand = new MakeMoveCommand(
+                MAKE_MOVE,
+                currentClientData.getAuthToken(),
+                currentClientData.getActiveGame().gameID(),
+                move
+        );
+        webSocketFacade.sendCommand(moveCommand);
+        return new ClientResponse(null, null, "");
     }
 
     private ClientResponse leave() throws IOException, IllegalStateException {
@@ -104,7 +143,7 @@ public class GameClient implements Client{
             throw new IllegalStateException("Error: Not currently in a game");
         }
 
-        return new ClientResponse("resignClient", null, "\n");
+        return new ClientResponse("resignClient", null, "");
     }
 
     private ClientResponse help() {

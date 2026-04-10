@@ -242,6 +242,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         String[] columnLabels = {"a", "b", "c", "d", "e", "f", "g", "h"};
         int row = position.getRow();
         int columnIndex = position.getColumn() - 1;
-        return row + columnLabels[columnIndex];
+        return columnLabels[columnIndex] + row;
     }
 }
