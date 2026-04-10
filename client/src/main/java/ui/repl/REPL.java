@@ -95,7 +95,7 @@ public class REPL {
 
     public void evaluateErrorMessage(ErrorMessage errorMessage) {
         String errorText = errorMessage.getContent();
-        printError("ERROR: " + errorText);
+        printError("\nERROR: " + errorText);
         printNewline();
         printPrompt();
     }
