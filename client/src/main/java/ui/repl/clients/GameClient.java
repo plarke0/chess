@@ -1,6 +1,5 @@
 package ui.repl.clients;
 
-import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPiece;
 import chess.ChessPosition;
@@ -14,8 +13,6 @@ import static websocket.commands.UserGameCommand.CommandType.*;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static ui.EscapeSequences.SET_TEXT_COLOR_RED;
 import static ui.repl.clients.ClientMethods.*;
@@ -82,7 +79,7 @@ public class GameClient implements Client{
 
         ChessPosition sourcePosition = decryptChessPosition(sourceString);
 
-        chessBoard.drawHighlightedBoard(activeGame.game().getBoard(), isWhiteView, sourcePosition);
+        chessBoard.drawHighlightedBoard(activeGame.game(), isWhiteView, sourcePosition);
         return new ClientResponse(null, null, "");
     }
 
@@ -176,31 +173,5 @@ public class GameClient implements Client{
         GameData activeGame = clientData.getActiveGame();
         Boolean isWhiteView = !user.equals(activeGame.blackUsername());
         chessBoard.drawBoard(activeGame.game().getBoard(), isWhiteView);
-    }
-
-    private ChessPosition decryptChessPosition(String position) {
-        char rowChar = position.charAt(1);
-        char columnChar = position.charAt(0);
-
-        int rowInt = rowChar - '1' + 1;
-        int columnInt = columnChar - 'a' + 1;
-
-        return new ChessPosition(rowInt, columnInt);
-    }
-
-    private static void validatePositionString(String position) throws IllegalArgumentException {
-        if (position.length() != 2) {
-            throw new IllegalArgumentException(
-                    "'" + position + "' is not a valid chess position"
-            );
-        }
-
-        Pattern pattern = Pattern.compile("[abcdefgh][12345678]");
-        Matcher matcher = pattern.matcher(position);
-        if (!matcher.find()) {
-            throw new IllegalArgumentException(
-                    "'" + position + "' is not a valid chess position"
-            );
-        }
     }
 }
