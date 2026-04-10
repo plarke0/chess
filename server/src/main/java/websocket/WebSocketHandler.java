@@ -172,7 +172,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             throw new ResponseException(400, "bad request");
         }
         // Mark the game as over and update it
-        gameData.game().setTeamTurn(ChessGame.TeamColor.GAMEOVER);
+        gameData.game().endGame();
         gameDAO.updateGame(gameData);
         // Sends a NotificationMessage to all clients
         String message = username + " has resigned";
