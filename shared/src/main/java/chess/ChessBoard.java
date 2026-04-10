@@ -50,7 +50,8 @@ public class ChessBoard implements Iterable<ChessPosition>, Cloneable{
      */
     public void resetBoard() {
         this.boardArray = new ChessPiece[8][8];
-        for (ChessGame.TeamColor color : ChessGame.TeamColor.values()) {
+        ChessGame.TeamColor[] colors = {ChessGame.TeamColor.WHITE, ChessGame.TeamColor.BLACK};
+        for (ChessGame.TeamColor color : colors) {
             int mainRow, pawnRow;
             if (color == ChessGame.TeamColor.WHITE) {
                 mainRow = 1;

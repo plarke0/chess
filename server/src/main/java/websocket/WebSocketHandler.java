@@ -1,6 +1,9 @@
 package websocket;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPosition;
+import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import dataaccess.mysql.MySQLAuthDAO;
@@ -10,6 +13,7 @@ import model.AuthData;
 import model.GameData;
 import org.jetbrains.annotations.NotNull;
 import responses.ResponseException;
+import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import org.eclipse.jetty.websocket.api.Session;
 import websocket.messages.ErrorMessage;
@@ -41,7 +45,9 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                     connect(command.getAuthToken(), command.getGameID(), wsMessageContext.session);
                 }
                 case MAKE_MOVE -> {
-                    makeMove(command.getAuthToken(), command.getGameID(), wsMessageContext.session);
+                    MakeMoveCommand makeMoveCommand = new Gson().fromJson(wsMessageContext.message(), MakeMoveCommand.class);
+                    ChessMove move = makeMoveCommand.move;
+                    makeMove(command.getAuthToken(), command.getGameID(), move, wsMessageContext.session);
                 }
                 case LEAVE -> {
                     leave(command.getAuthToken(), command.getGameID(), wsMessageContext.session);
@@ -52,7 +58,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             }
         } catch (IOException ex) {
             ex.printStackTrace();
-        } catch (ResponseException | DataAccessException ex) {
+        } catch (ResponseException | DataAccessException | InvalidMoveException | IllegalStateException ex) {
             ErrorMessage errorMessage = new ErrorMessage(ERROR, ex.getMessage());
             try {
                 connectionManager.broadcastToGameIndividual(wsMessageContext.session, command.getGameID(), errorMessage);
@@ -112,9 +118,10 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     private void connect(String authToken, int gameID, Session rootSession) throws ResponseException, DataAccessException, IOException {
+        connectionManager.add(rootSession, gameID);
+
         checkAuth(authToken);
 
-        connectionManager.add(rootSession, gameID);
         GameData gameData = getGameData(authToken, gameID);
         LoadGameMessage loadGameMessage = new LoadGameMessage(LOAD_GAME, gameData);
         connectionManager.broadcastToGameIndividual(rootSession, gameID, loadGameMessage);
@@ -125,12 +132,61 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         connectionManager.broadcastToGameExclusive(rootSession, gameID, notificationMessage);
     }
 
-    private void makeMove(String authToken, int gameID, Session rootSession) throws ResponseException, DataAccessException, IOException {
+    private void makeMove(String authToken, int gameID, ChessMove move, Session rootSession)
+            throws ResponseException, DataAccessException, IOException, InvalidMoveException {
+        checkAuth(authToken);
         // Verify validity
+        GameData gameData = getGameData(authToken, gameID);
+        String username = getUsername(authToken);
+        String white = gameData.whiteUsername();
+        String black = gameData.blackUsername();
+        ChessGame.TeamColor currentColor = gameData.game().getTeamTurn();
+        System.out.println(username + ": " + currentColor);
+        if (username.equals(white) && currentColor != ChessGame.TeamColor.WHITE) {
+            throw new InvalidMoveException("It is not your turn to move");
+        }
+        if (username.equals(black) && currentColor != ChessGame.TeamColor.BLACK) {
+            throw new InvalidMoveException("It is not your turn to move");
+        }
+        if (!username.equals(white) && !username.equals(black)) {
+            throw new InvalidMoveException("Observers cannot move");
+        }
+
         // Update game
+        gameData.game().makeMove(move);
+        gameDAO.updateGame(gameData);
+
         // Send LoadGameMessage to all clients in the game with updated game
+        LoadGameMessage loadGameMessage = new LoadGameMessage(LOAD_GAME, gameData);
+        connectionManager.broadcastToGame(gameID, loadGameMessage);
+
         // Send NotificationMessage to all other clients with the move just made
-        // If the move results in check, checkmate, or stalemate, sed a NotificationMessage to all clients
+        String sourceLabel = getPositionString(move.getStartPosition());
+        String destinationLabel = getPositionString(move.getEndPosition());
+        String message = "Player " + username + " moved from " + sourceLabel + " to " + destinationLabel;
+        NotificationMessage notification = new NotificationMessage(NOTIFICATION, message);
+        connectionManager.broadcastToGameExclusive(rootSession, gameID, notification);
+
+        // If the move results in check, checkmate, or stalemate, send a NotificationMessage to all clients
+        currentColor = gameData.game().getTeamTurn();
+        String extraMessage = null;
+        if (gameData.game().isInCheck(currentColor)) {
+            extraMessage = username + " has put their opponent in check";
+        }
+        if (gameData.game().isInCheckmate(currentColor)) {
+            extraMessage = username + " has put their opponent in checkmate. Game over";
+            gameData.game().endGame();
+            gameDAO.updateGame(gameData);
+        }
+        if (gameData.game().isInStalemate(currentColor)) {
+            extraMessage = username + " has put their opponent in stalemate. Game over";
+            gameData.game().endGame();
+            gameDAO.updateGame(gameData);
+        }
+        if (extraMessage != null) {
+            NotificationMessage extraNotification = new NotificationMessage(NOTIFICATION, extraMessage);
+            connectionManager.broadcastToGame(gameID, extraNotification);
+        }
     }
 
     private void leave(String authToken, int gameID, Session rootSession) throws ResponseException, DataAccessException, IOException {
@@ -158,18 +214,21 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         gameDAO.updateGame(gameData);
         connectionManager.remove(rootSession);
         // Send NotificationMessage to all other clients
-        String username = getUsername(authToken);
         String message = username + " has left the game";
         NotificationMessage notificationMessage = new NotificationMessage(NOTIFICATION, message);
         connectionManager.broadcastToGameExclusive(rootSession, gameID, notificationMessage);
     }
 
-    private void resign(String authToken, int gameID, Session rootSession) throws ResponseException, DataAccessException, IOException {
+    private void resign(String authToken, int gameID, Session rootSession)
+            throws ResponseException, DataAccessException, IOException, IllegalStateException {
         checkAuth(authToken);
         String username = getUsername(authToken);
         GameData gameData = getGameData(authToken, gameID);
         if (!username.equals(gameData.whiteUsername()) && !username.equals(gameData.blackUsername())) {
             throw new ResponseException(400, "bad request");
+        }
+        if (gameData.game().getTeamTurn() == ChessGame.TeamColor.GAMEOVER) {
+            throw new IllegalStateException("Cannot resign, the game is over");
         }
         // Mark the game as over and update it
         gameData.game().endGame();
@@ -178,5 +237,12 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         String message = username + " has resigned";
         NotificationMessage notificationMessage = new NotificationMessage(NOTIFICATION, message);
         connectionManager.broadcastToGame(gameID, notificationMessage);
+    }
+
+    private String getPositionString(ChessPosition position) {
+        String[] columnLabels = {"a", "b", "c", "d", "e", "f", "g", "h"};
+        int row = position.getRow();
+        int columnIndex = position.getColumn() - 1;
+        return row + columnLabels[columnIndex];
     }
 }
