@@ -119,7 +119,13 @@ public class ChessBoard {
     }
 
     private void drawBoardSquare(ChessPiece[][] boardArray, int rowNumber, int columnNumber) {
-        ChessPosition squarePosition = new ChessPosition(rowNumber, columnNumber);
+        int trueRowIndex = 8 - rowNumber;
+        int trueColumnIndex = columnNumber + 1;
+        if (!isWhiteView) {
+            trueRowIndex = rowNumber + 1;
+            trueColumnIndex = 8 - columnNumber;
+        }
+        ChessPosition squarePosition = new ChessPosition(trueRowIndex, trueColumnIndex);
         if (highlightedPositions != null && highlightedPositions.contains(squarePosition)) {
             setSquareColor(rowNumber, columnNumber, HighlightType.DESTINATION);
         } else if (squarePosition.equals(highlightSource)) {
