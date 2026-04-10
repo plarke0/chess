@@ -171,12 +171,21 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
         // If the move results in check, checkmate, or stalemate, send a NotificationMessage to all clients
         currentColor = gameData.game().getTeamTurn();
+        String opponentUsername = null;
+        if (currentColor == ChessGame.TeamColor.WHITE) {
+            opponentUsername = gameData.whiteUsername();
+        } else if (currentColor == ChessGame.TeamColor.BLACK) {
+            opponentUsername = gameData.blackUsername();
+        }
+        if (opponentUsername == null) {
+            opponentUsername = "Opponent of " + username;
+        }
         String extraMessage = null;
         if (gameData.game().isInCheck(currentColor)) {
-            extraMessage = username + " has put their opponent in check";
+            extraMessage = opponentUsername + " is in check";
         }
         if (gameData.game().isInCheckmate(currentColor)) {
-            extraMessage = username + " has put their opponent in checkmate. Game over";
+            extraMessage = opponentUsername + " is in checkmate. Game over";
             gameData.game().endGame();
             gameDAO.updateGame(gameData);
         }
