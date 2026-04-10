@@ -141,7 +141,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         String white = gameData.whiteUsername();
         String black = gameData.blackUsername();
         ChessGame.TeamColor currentColor = gameData.game().getTeamTurn();
-        System.out.println(username + ": " + currentColor);
         if (username.equals(white) && currentColor != ChessGame.TeamColor.WHITE) {
             throw new InvalidMoveException("It is not your turn to move");
         }
