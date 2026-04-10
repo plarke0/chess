@@ -110,7 +110,7 @@ public class ChessGame {
     private void switchTurns() {
         if (this.currentTeamColor == TeamColor.WHITE) {
             setTeamTurn(TeamColor.BLACK);
-        } else {
+        } else if (this.currentTeamColor == TeamColor.BLACK) {
             setTeamTurn(TeamColor.WHITE);
         }
     }
