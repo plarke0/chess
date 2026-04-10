@@ -217,6 +217,10 @@ public class ChessGame {
         return validMoves;
     }
 
+    public void endGame() {
+        this.currentTeamColor = TeamColor.GAMEOVER;
+    }
+
     /**
      * Sets this game's chessboard with a given board
      *
