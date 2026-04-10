@@ -97,9 +97,12 @@ public class GameClient implements Client{
                             + "2 or 3 were needed"
             );
         }
-
-        ChessPosition source = decryptChessPosition(params[0]);
-        ChessPosition destination = decryptChessPosition(params[1]);
+        String sourceString = params[0];
+        String destinationString = params[1];
+        validatePositionString(sourceString);
+        ChessPosition source = decryptChessPosition(sourceString);
+        validatePositionString(destinationString);
+        ChessPosition destination = decryptChessPosition(destinationString);
         ChessPiece.PieceType promotionType = null;
         if (params.length == 3) {
             String promotionString = params[2];
