@@ -15,6 +15,7 @@ public class REPL {
     private final SignedOutClient signedOutClient;
     private final SignedInClient signedInClient;
     private final GameClient gameClient;
+    private final ResignClient resignClient;
     Client currentClientState;
 
     public ClientData clientData = new ClientData();
@@ -29,6 +30,7 @@ public class REPL {
          signedOutClient = new SignedOutClient(serverURL);
          signedInClient = new SignedInClient(serverURL, webSocketFacade);
          gameClient = new GameClient(serverURL, webSocketFacade);
+         resignClient = new ResignClient(webSocketFacade);
          currentClientState = signedOutClient;
     }
 
@@ -48,6 +50,7 @@ public class REPL {
                     case "signedOutClient" -> currentClientState = signedOutClient;
                     case "signedInClient" -> currentClientState = signedInClient;
                     case "gameClient" -> currentClientState = gameClient;
+                    case "resignClient" -> currentClientState = resignClient;
                     case "quit" -> {
                         break replLoop;
                     }

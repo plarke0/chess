@@ -112,6 +112,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     private void connect(String authToken, int gameID, Session rootSession) throws ResponseException, DataAccessException, IOException {
+        checkAuth(authToken);
+
         connectionManager.add(rootSession, gameID);
         GameData gameData = getGameData(authToken, gameID);
         LoadGameMessage loadGameMessage = new LoadGameMessage(LOAD_GAME, gameData);
@@ -132,6 +134,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     private void leave(String authToken, int gameID, Session rootSession) throws ResponseException, DataAccessException, IOException {
+        checkAuth(authToken);
         // Update game to remove root client
         connectionManager.remove(rootSession);
         // Send NotificationMessage to all other clients
@@ -142,7 +145,18 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     private void resign(String authToken, int gameID, Session rootSession) throws ResponseException, DataAccessException, IOException {
+        checkAuth(authToken);
+        String username = getUsername(authToken);
+        GameData gameData = getGameData(authToken, gameID);
+        if (!username.equals(gameData.whiteUsername()) && !username.equals(gameData.blackUsername())) {
+            throw new ResponseException(400, "bad request");
+        }
         // Mark the game as over and update it
+        gameData.game().setTeamTurn(ChessGame.TeamColor.GAMEOVER);
+        gameDAO.updateGame(gameData);
         // Sends a NotificationMessage to all clients
+        String message = username + " has resigned";
+        NotificationMessage notificationMessage = new NotificationMessage(NOTIFICATION, message);
+        connectionManager.broadcastToGame(gameID, notificationMessage);
     }
 }

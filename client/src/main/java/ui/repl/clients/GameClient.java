@@ -99,8 +99,12 @@ public class GameClient implements Client{
         );
     }
 
-    private ClientResponse resign() {
-        return null;
+    private ClientResponse resign() throws IOException {
+        if (currentClientData.getActiveGame() == null) {
+            throw new IllegalStateException("Error: Not currently in a game");
+        }
+
+        return new ClientResponse("resignClient", null, "\n");
     }
 
     private ClientResponse help() {
