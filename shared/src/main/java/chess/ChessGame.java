@@ -90,13 +90,13 @@ public class ChessGame {
 
         Collection<ChessMove> validMoves = validMoves(startPosition);
         if (validMoves == null || !validMoves.contains(move)) {
-            throw new InvalidMoveException();
+            throw new InvalidMoveException("Invalid move");
         }
 
         ChessPiece movingPiece = this.board.getPiece(startPosition);
         TeamColor movingColor = movingPiece.getTeamColor();
         if (movingColor != this.currentTeamColor) {
-            throw new InvalidMoveException();
+            throw new InvalidMoveException("Invalid move");
         }
         if (promotionPiece != null) {
             movingPiece = new ChessPiece(movingColor, promotionPiece);
