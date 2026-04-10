@@ -136,6 +136,26 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     private void leave(String authToken, int gameID, Session rootSession) throws ResponseException, DataAccessException, IOException {
         checkAuth(authToken);
         // Update game to remove root client
+        String username = getUsername(authToken);
+        GameData gameData = getGameData(authToken, gameID);
+        if (username.equals(gameData.whiteUsername())) {
+            gameData = new GameData(
+                    gameData.gameID(),
+                    null,
+                    gameData.blackUsername(),
+                    gameData.gameName(),
+                    gameData.game()
+            );
+        } else if (username.equals(gameData.blackUsername())) {
+            gameData = new GameData(
+                    gameData.gameID(),
+                    gameData.whiteUsername(),
+                    null,
+                    gameData.gameName(),
+                    gameData.game()
+            );
+        }
+        gameDAO.updateGame(gameData);
         connectionManager.remove(rootSession);
         // Send NotificationMessage to all other clients
         String username = getUsername(authToken);
