@@ -23,20 +23,14 @@ public class ChessBoard {
         DESTINATION
     }
 
-    public void drawHighlightedBoard(chess.ChessBoard board, Boolean isWhiteView, ChessPosition source) {
-        ChessPiece piece = board.getPiece(source);
-        if (piece != null) {
-            highlightSource = source;
-            highlightedPositions = new ArrayList<>();
-            for (ChessMove move : piece.pieceMoves(board, source)) {
-                highlightedPositions.add(move.getEndPosition());
-            }
-        } else {
-            highlightSource = null;
-            highlightedPositions = null;
+    public void drawHighlightedBoard(chess.ChessGame game, Boolean isWhiteView, ChessPosition source) {
+        highlightSource = source;
+        highlightedPositions = new ArrayList<>();
+        for (ChessMove move : game.validMoves(source)) {
+            highlightedPositions.add(move.getEndPosition());
         }
 
-        drawBoard(board, isWhiteView);
+        drawBoard(game.getBoard(), isWhiteView);
 
         highlightSource = null;
         highlightedPositions = null;
