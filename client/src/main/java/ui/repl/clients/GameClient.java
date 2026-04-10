@@ -150,13 +150,24 @@ public class GameClient implements Client{
     }
 
     private ClientResponse help() {
-        String msg = """
+        String msg;
+        if (currentClientData.getActiveGame() == null ||
+                currentClientData.getUsername().equals(currentClientData.getActiveGame().whiteUsername()) ||
+                currentClientData.getUsername().equals(currentClientData.getActiveGame().blackUsername())) {
+            msg = """
                 redraw - redraws the chess board
                 highlight <source> - highlights the available moves of the piece at source
                 move <source> <destination> <promotion (optional)> - moves the piece at source to destination
                 leave - leave the game
                 resign - resign the game
                 help - list possible commands""";
+        } else {
+            msg = """
+                redraw - redraws the chess board
+                highlight <source> - highlights the available moves of the piece at source
+                leave - leave the game
+                help - list possible commands""";
+        }
         return new ClientResponse(null, null, msg);
     }
 
