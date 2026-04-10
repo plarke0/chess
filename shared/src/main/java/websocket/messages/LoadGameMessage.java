@@ -4,15 +4,15 @@ import model.GameData;
 
 public class LoadGameMessage extends ServerMessage {
 
-    private GameData content;
+    private GameData game;
 
-    public LoadGameMessage(ServerMessageType type, GameData content) {
+    public LoadGameMessage(ServerMessageType type, GameData game) {
         super(type);
-        this.content = content;
+        this.game = game;
     }
 
     @Override
     public GameData getContent() {
-        return content;
+        return game;
     }
 }
